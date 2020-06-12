@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind -  How to use S3 as a maven repository </title>
+  
+    
+  
+  <meta name="description" content="It's very common for a company to host a private maven reposiroty, so that the development team could share java artifacts, there are also lots of solutions for self hosted maven repository, e.g: Nexus from sonatype.com or JFrog Artifactory, these are cool products, but most of the time we just want a place to store th">
+  
+  <link rel="canonical" href="https://www.vipmind.me/infra/aws/-how-to-use-s3-as-a-maven-repository">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span> How to use S3 as a maven repository </span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1> How to use S3 as a maven repository </h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">17 Sep 2019 20:16:37</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>It's very common for a company to host a private maven reposiroty, so that the development team could share java artifacts, there are also lots of solutions for self hosted maven repository, e.g: <a href="https://www.sonatype.com/nexus-repository-oss">Nexus</a> from sonatype.com or <a href="https://jfrog.com/">JFrog Artifactory</a>, these are cool products, but most of the time we just want a place to store the artifacts and could be downloaded by internal development team. if we could leverage the online storage service to act as our maven repository then we do not need to spend effort to manage the the repository by ourselvs and do not need to worry about the disk issue backup etc. here comes the solution to host maven reposority on <a href="https://aws.amazon.com/s3/">AWS S3</a></p>
+<p><figure><img src="../../images/maven-on-s3.png" alt="maven-on-s3"></figure></p>
+<h2 id="setup-s3-as-maven-repository-1">setup s3 as maven repository</h2>
+<p>I have a terraform script to do this , the <a href="https://github.com/email2liyang/terraform-mate/blob/master/unit2/main.tf">whole script</a> could be found under my github account.</p>
+<ul>
+<li>create the s3 bucket as my maven repository</li>
+</ul>
+<pre><code>resource &quot;aws_s3_bucket&quot; &quot;corp_maven_repo&quot; {
+  bucket = &quot;${var.bucket_name}&quot;
+
+  versioning {
+    enabled = false
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+</code></pre>
+<ul>
+<li>create 2 users to access the s3 bucket, one user is called ro user which is used by the development team to download the artifact, the other user is called rw user which could be used by CI server to upload artifact to s3</li>
+</ul>
+<pre><code># we need a service account user
+resource &quot;aws_iam_user&quot; &quot;s3_repo_user_rw&quot; {
+  name = &quot;srv_${var.bucket_name}_rw&quot;
+}
+
+# generate keys for service account user
+resource &quot;aws_iam_access_key&quot; &quot;s3_repo_user_keys_rw&quot; {
+  user = &quot;${aws_iam_user.s3_repo_user_rw.name}&quot;
+}
+
+# we need a service account user
+resource &quot;aws_iam_user&quot; &quot;s3_repo_user_ro&quot; {
+  name = &quot;srv_${var.bucket_name}_ro&quot;
+}
+
+# generate keys for service account user
+resource &quot;aws_iam_access_key&quot; &quot;s3_repo_user_keys_ro&quot; {
+  user = &quot;${aws_iam_user.s3_repo_user_ro.name}&quot;
+}
+</code></pre>
+<ul>
+<li>
+<p>grant read only and read write permission to the ro and rw user, you could check the detail code from <a href="https://github.com/email2liyang/terraform-mate/blob/master/unit2/main.tf#L38-L99">https://github.com/email2liyang/terraform-mate/blob/master/unit2/main.tf#L38-L99</a></p>
+</li>
+<li>
+<p>have the terraform to output ro and rw user's access key and secret key</p>
+</li>
+</ul>
+<pre><code>//the access key
+output &quot;iam_access_key_id_rw&quot; {
+  value = &quot;${aws_iam_access_key.s3_repo_user_keys_rw.id}&quot;
+}
+//the access key secret
+output &quot;iam_access_key_secret_rw&quot; {
+  value = &quot;${aws_iam_access_key.s3_repo_user_keys_rw.secret}&quot;
+}
+//the access key
+output &quot;iam_access_key_id_ro&quot; {
+  value = &quot;${aws_iam_access_key.s3_repo_user_keys_ro.id}&quot;
+}
+//the access key secret
+output &quot;iam_access_key_secret_ro&quot; {
+  value = &quot;${aws_iam_access_key.s3_repo_user_keys_ro.secret}&quot;
+}
+</code></pre>
+<h2 id="use-s3-as-repository-in-gradle-project-2">use s3 as repository in gradle project</h2>
+<p>Gradle support s3 as maven repository <a href="https://docs.gradle.org/current/userguide/repository_types.html">out of box</a>, so in build.gradle file, we could simply specify repositories as below</p>
+<pre><code>repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven {
+            credentials(AwsCredentials) {
+                accessKey &quot;xxxxx&quot;
+                secretKey &quot;xxxxx&quot;
+            }
+            url 's3://corp_maven_repo/maven/snapshots/'
+        }
+        maven {
+            credentials(AwsCredentials) {
+                accessKey &quot;xxxxx&quot;
+                secretKey &quot;xxxxx&quot;
+            }
+            url 's3://corp_maven_repo/maven/releases/'
+        }
+    }
+</code></pre>
+<h2 id="use-s3-as-repository-in-maven-project-3">use s3 as repository in maven project</h2>
+<p>maven does not support s3 out of box, but there are plugins to support it, e.g: <a href="https://github.com/seahen/maven-s3-wagon">https://github.com/seahen/maven-s3-wagon</a>. we could config the extention first</p>
+<pre><code>&lt;build&gt;
+  &lt;extensions&gt;
+    &lt;extension&gt;
+      &lt;groupId&gt;com.github.seahen&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-s3-wagon&lt;/artifactId&gt;
+      &lt;version&gt;[S3 Wagon Version]&lt;/version&gt;
+   &lt;/extension&gt;
+  &lt;/extensions&gt;
+&lt;/build&gt;
+</code></pre>
+<p>then add the maven repository in the repositories</p>
+<pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;corp-releases&lt;/id&gt;
+        &lt;url&gt;s3://corp_maven_repo/maven/releases&lt;/url&gt;
+        &lt;releases&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
+        &lt;/releases&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;false&lt;/enabled&gt;
+        &lt;/snapshots&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;        
+</code></pre>
+<p>to authenticat to s3, we need to a section in ~/.m2/settings.xml</p>
+<pre><code>&lt;server&gt;
+  &lt;id&gt;corp-releases&lt;/id&gt;
+  &lt;username&gt;xxxx&lt;/username&gt;
+  &lt;password&gt;xxxx&lt;/password&gt;
+&lt;/server&gt;
+</code></pre>
+<p>now we could use s3 as maven repository for both of maven and gradle projects</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

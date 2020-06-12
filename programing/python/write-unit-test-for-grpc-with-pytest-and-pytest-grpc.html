@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Write unit test for grpc with pytest and pytest-grpc</title>
+  
+    
+  
+  <meta name="description" content="I've described how to bootstrap a simple grpc server in python,now it's time to test the grpc service. I'm using pytest-grpc to write unit test for grpc service. pytest-grpc is a pytest plugin, it's leverage the power of pytest fixtures to make unit test for grpc service very easy. to write unit test for grpc, there ar">
+  
+  <link rel="canonical" href="https://www.vipmind.me/programing/python/write-unit-test-for-grpc-with-pytest-and-pytest-grpc">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span>Write unit test for grpc with pytest and pytest-grpc</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Write unit test for grpc with pytest and pytest-grpc</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">20 Oct 2019 20:12:25</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>I've described <a href="https://www.vipmind.me/programing/python/setup-grpc-server-project-in-python.html">how to bootstrap a simple grpc server in python</a>,now it's time to test the grpc service.</p>
+<p><figure><img src="../../images/pytest-grpc.png" alt="pytest-grpc"></figure></p>
+<p>I'm using <a href="https://pypi.org/project/pytest-grpc/">pytest-grpc</a> to write unit test for grpc service. <a href="https://pypi.org/project/pytest-grpc/">pytest-grpc</a> is a <a href="https://docs.pytest.org/en/latest/">pytest</a> plugin, it's leverage the power of <a href="https://docs.pytest.org/en/latest/fixture.html">pytest fixtures </a> to make unit test for grpc service very easy. to write unit test for grpc, there are 3 specific <a href="https://docs.pytest.org/en/latest/fixture.html">pytest fixtures </a> to implement, it's recommended to import artifacts within the fixture method to avoid package confilict</p>
+<ul>
+<li>grpc_add_to_server<br />
+the test need to know how to add grpc servicer into grpc server, this fixutre will return the generated funciton to add grpc servicer to grpc server</li>
+</ul>
+<pre><code>@pytest.fixture(scope='module')
+def grpc_add_to_server():
+    from grpc_mate.helloworld_pb2_grpc import add_GreeterServicer_to_server
+
+    return add_GreeterServicer_to_server
+</code></pre>
+<ul>
+<li>grpc_servicer<br />
+the test need to know what servicer instance need to add to grpc server, this fixture methjod should return a servicer instnace</li>
+</ul>
+<pre><code>@pytest.fixture(scope='module')
+def grpc_servicer():
+    from service.greeter_servicer import GreeterServicer
+
+    return GreeterServicer()
+</code></pre>
+<ul>
+<li>grpc_stub_cls<br />
+the test need to know which client stub class to use to init the grpc stub instance</li>
+</ul>
+<pre><code>@pytest.fixture(scope='module')
+def grpc_stub_cls(grpc_channel):
+    from grpc_mate.helloworld_pb2_grpc import GreeterStub
+
+    return GreeterStub
+</code></pre>
+<p>after we provide these information, <a href="https://pypi.org/project/pytest-grpc/">pytest-grpc</a> will do the rest for us, it will take care of the grpc server/ channel's creation and termination, it will help us to construct the client stub, what we need to do is just focus on write meaningful unit test to test out grpc logic, like below</p>
+<pre><code>def test_SayHello(grpc_stub):
+    hello_request = HelloRequest(name='ivan')
+    response = grpc_stub.SayHello(hello_request)
+
+    assert response.message == f'hello {hello_request.name}'
+</code></pre>
+<p>see the full example from <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/tests/service/test_greeter_servicer.py">test_greeter_servicer.py</a></p>
+<p><a href="https://grpc.github.io/grpc/python/index.html">grpc-python</a> do have it's own module to <a href="https://grpc.github.io/grpc/python/grpc_testing.html">test grpc server</a>, but I find the api is very confusing and the test code is not easy to maintain, so it's not recommended to use grpc-python's offical test module.</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

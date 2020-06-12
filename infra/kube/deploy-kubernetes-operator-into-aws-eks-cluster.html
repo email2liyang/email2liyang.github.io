@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Deploy Kubernetes Operator into AWS EKS Cluster</title>
+  
+    
+  
+  <meta name="description" content="I've described on how to develop Kubernetes Operator in Python in last article, now it's time to deploy it into Kubernetes Cluster, I'm using AWS EKS, but the deployment method is standard kubernetes way so it could be deployed to GKE or other Kubernetes cluster as well. step 1 expose python dependencies we could achie">
+  
+  <link rel="canonical" href="https://www.vipmind.me/infra/kube/deploy-kubernetes-operator-into-aws-eks-cluster">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span>Deploy Kubernetes Operator into AWS EKS Cluster</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Deploy Kubernetes Operator into AWS EKS Cluster</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">8 Oct 2019 20:11:32</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>I've described on how to develop Kubernetes Operator in Python in <a href="https://www.vipmind.me/infra/kube/writing-kubernetes-operator-in-python-with-kopf.html">last article</a>, now it's time to deploy it into Kubernetes Cluster, I'm using <a href="https://aws.amazon.com/eks/">AWS EKS</a>, but the deployment method is standard kubernetes way so it could be deployed to <a href="https://cloud.google.com/kubernetes-engine/">GKE</a> or other Kubernetes cluster as well.</p>
+<p><figure><img src="../../images/kube-operator-on-python.png" alt="kube-operator-on-python"></figure></p>
+<h2 id="step-1-expose-python-dependencies-1">step 1 expose python dependencies</h2>
+<p>we could achieve this by command <code>pipenv lock -r &gt; requirements.txt</code></p>
+<h2 id="step-2-build-docker-image-2">step 2 build docker image</h2>
+<p>the content of the image is as simple as below</p>
+<pre><code>FROM python:3.7
+LABEL maintainer=&quot;email2liyang@gmail.com&quot;
+COPY kube_service_dns_exporter.py /kube_service_dns_exporter.py
+COPY requirements.txt  /tmp
+# install extra dependencies specified by developers
+RUN pip install -r /tmp/requirements.txt
+CMD kopf run /kube_service_dns_exporter.py --verbose
+</code></pre>
+<p>then we could build the docker image and push it to docker hub</p>
+<pre><code>docker build -t email2liyang/kube_service_dns_exporter:latest .
+docker push email2liyang/kube_service_dns_exporter:latest
+</code></pre>
+<p>the docker image is ready to use in docker hub <a href="https://cloud.docker.com/u/email2liyang/repository/docker/email2liyang/kube_service_dns_exporter">https://cloud.docker.com/u/email2liyang/repository/docker/email2liyang/kube_service_dns_exporter</a></p>
+<h2 id="step-3-define-rbac-for-the-operator-3">step 3 define rbac for the operator</h2>
+<p>this is important step , because the operator need some specific permission to communicate with kubernetes api, Kopf is using <a href="https://pypi.org/project/pykube-ng/">pykube-ng</a> to communicate with kubernetes api. you could checkout my rbac details from <a href="https://github.com/email2liyang/kubernetes-service-dns-exporter/blob/master/yaml/rbac.yml">rbac.yml</a>. in<br />
+<a href="https://github.com/email2liyang/kubernetes-service-dns-exporter">kubernetes-service-dns-exporter</a>, I'm just interested in kubernetes service's creation and deletion event and I've defined a service account named <code>kopf</code> to do that</p>
+<h2 id="step-4-define-kubernetes-secret-4">step 4 define kubernetes secret</h2>
+<p>it's a good practice to place sensitive data into kubernetes secret and just refrence it in deployment, in my case I'm putting my route53 zone id and aws access key and secret key into kubernetes secret, this is just an <a href="https://github.com/email2liyang/kubernetes-service-dns-exporter/blob/master/yaml/secrets.yaml.example">example</a> of how the kubernetes secret is organised</p>
+<h2 id="step-5-define-kubernetes-deployment-5">step 5 define kubernetes deployment</h2>
+<p>the <a href="https://github.com/email2liyang/kubernetes-service-dns-exporter/blob/master/yaml/deployment.yaml">full deployment yaml file</a> could be found in github. in the deployment yaml file, I'm using the service account <code>kopf</code> to make sure pod has enough permission to communicate with kubernetes api. it's also recommended to set <code>replicas</code> value as 1 because if more than 1 operator for the samee event exist in the cluster, it may result in some un-expected behaviour.</p>
+<h2 id="step-6-deploy-kubernetes-artifact-into-the-cluster-6">step 6 deploy kubernetes artifact into the cluster</h2>
+<p>just issue command <code>kubectl apply -f yaml/</code>, we are done, we could check the pod are running well</p>
+<pre><code>kubectl get po -n tool
+NAME                                        READY     STATUS    RESTARTS   AGE
+kube-service-dns-exporter-dd8bc57cb-6gf52   1/1       Running   0          1h
+</code></pre>
+<p>and new event are attached to exist service</p>
+<pre><code>kubectl describe svc redis -n tool
+Name:                     redis
+Namespace:                tool
+Labels:                   app=redis
+                          role=master
+                          tier=backend
+Annotations:              kopf.zalando.org/last-handled-configuration={&quot;spec&quot;: {&quot;ports&quot;: [{&quot;protocol&quot;: &quot;TCP&quot;, &quot;port&quot;: 6379, &quot;targetPort&quot;: 6379, &quot;nodePort&quot;: 30702}], &quot;selector&quot;: {&quot;app&quot;: &quot;redis&quot;, &quot;role&quot;: &quot;master&quot;, &quot;tier&quot;: &quot;backe...
+                          kubectl.kubernetes.io/last-applied-configuration={&quot;apiVersion&quot;:&quot;v1&quot;,&quot;kind&quot;:&quot;Service&quot;,&quot;metadata&quot;:{&quot;annotations&quot;:{},&quot;labels&quot;:{&quot;app&quot;:&quot;redis&quot;,&quot;role&quot;:&quot;master&quot;,&quot;tier&quot;:&quot;backend&quot;},&quot;name&quot;:&quot;redis&quot;,&quot;namespace&quot;:&quot;...
+Selector:                 app=redis,role=master,tier=backend
+Type:                     NodePort
+IP:                       172.20.53.35
+Port:                     &lt;unset&gt;  6379/TCP
+TargetPort:               6379/TCP
+NodePort:                 &lt;unset&gt;  30702/TCP
+Endpoints:                10.31.4.218:6379
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:
+  Type    Reason   Age   From  Message
+  ----    ------   ----  ----  -------
+  Normal  Logging  5m    kopf  creating dns for service redis which point to ip 172.20.53.35
+  Normal  Logging  4m    kopf  All handlers succeeded for creation.
+  Normal  Logging  4m    kopf  created dns kube-redis.vipmind.me  point to 172.20.53.35
+  Normal  Logging  4m    kopf  Handler 'create_fn' succeeded.
+</code></pre>
+<p>we could also observe that the dns record is created in route53<br />
+<figure><img src="../../images/route53-record.png" alt="route53-record"></figure></p>
+<p>Enjoy!</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - How to do Grpc Client Stream upload</title>
+  
+    
+  
+  <meta name="description" content="In grpc-mate we have product_update_servicer.py to show how to do client stream upload in grpc. protobuf service ProductUpdateService { //upload product into elastic search , make it so that we could search on it //used to demo client side stream rpc UploadProduct (stream Product) returns (UploadProductResponse) { } }">
+  
+  <link rel="canonical" href="https://www.vipmind.me/programing/python/how-to-do-grpc-client-stream-upload">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span>How to do Grpc Client Stream upload</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>How to do Grpc Client Stream upload</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">31 Oct 2019 20:54:32</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>In <a href="https://github.com/email2liyang/grpc-mate">grpc-mate</a> we have <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/service/product_update_servicer.py">product_update_servicer.py</a> to show how to do client stream upload in grpc.</p>
+<p><figure><img src="../../images/python-grpc.png" alt="python-grpc"></figure></p>
+<h2 id="protobuf-1">protobuf</h2>
+<pre><code>service ProductUpdateService {
+    //upload product into elastic search , make it so that we could search on it
+    //used to demo client side stream
+    rpc UploadProduct (stream Product) returns (UploadProductResponse) {
+
+    }
+}
+message UploadProductResponse {
+    enum ResultStatus {
+        SUCCESS = 0;
+        FAILED = 1;
+    }
+    ResultStatus result_status = 1;
+}
+</code></pre>
+<h2 id="server-side-2">server side</h2>
+<pre><code>class ProductUpdateServiceServicer(grpc_mate.product_search_engine_pb2_grpc.ProductUpdateServiceServicer):
+    def UploadProduct(self, request_iterator, context):
+        with session_scope() as session:
+            for product in request_iterator:
+                db_product = DBProduct()
+                for k in product.DESCRIPTOR.fields_by_name:
+                    setattr(db_product, k, getattr(product, k))
+                db_product.product_id = None
+                session.add(db_product)
+
+        return UploadProductResponse(result_status=UploadProductResponse.SUCCESS)
+</code></pre>
+<ul>
+<li>from the server side, we will get a request iterator to iterate all the uploaded object, in this case it's a stream of <a href="https://github.com/email2liyang/grpc-mate/blob/master/protobuffers/grpc_mate/product_common.proto#L6-L12">Product</a> messages</li>
+<li>we could re-use the <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/data_store/db.py#L6-L16">session_scope</a> to access session object without worrying about session management.</li>
+<li>as we defined <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/data_store/models.py#L7-L13">DBProdcut</a> have exactly the same attributes as <a href="https://github.com/email2liyang/grpc-mate/blob/master/protobuffers/grpc_mate/product_common.proto#L6-L12">Product</a> message, we could use code below to copy the attributes between the objects, this is super useful when you have lots of fields in the message</li>
+</ul>
+<pre><code>db_product = DBProduct()
+    for k in product.DESCRIPTOR.fields_by_name:
+        setattr(db_product, k, getattr(product, k))
+</code></pre>
+<h2 id="client-side-3">client side</h2>
+<p>I will use unit test way to show how to make a stream call in the client, I've already discussed how to use pytest-grpc to test the grpc servicer in this <a href="https://www.vipmind.me/programing/python/write-unit-test-for-grpc-with-pytest-and-pytest-grpc.html">article</a>, I will use the same approach in <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/tests/service/test_product_update_servicer.py">test_product_update_servicer.py</a>, but there are something different from previous article -- we also use sqlalchemy to do data persist, so we need a way to init the DB and destroy the DB after usage, thanks to pytest's fixture, we could easily achieve this by code below</p>
+<pre><code>@pytest.fixture(autouse=True, scope='function')
+def create_schema():
+    if engine.url.__str__() == 'sqlite:///:memory:':
+        Base.metadata.create_all(engine)
+        yield None
+        Base.metadata.drop_all(engine)
+</code></pre>
+<p>create_schema fixture will be exucted before any test method and yield nothing, after the test method complete, it will drop all the tables, so any test method in the module will have  a clean db state to use.</p>
+<p>to call the grpc method, we simply use a list to simulate the iterator then pass to the client call, due to python's iterator design, apart from list, we could write a custom iteerator or generator to have a limitless client stream pass to the grpc server</p>
+<pre><code>products = [
+        Product(product_name='product_name_1', product_price=1.0, product_status=InStock, category='category_1'),
+        Product(product_name='product_name_2', product_price=2.0, product_status=InStock, category='category_2')]
+grpc_stub.UploadProduct(iter(products))
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

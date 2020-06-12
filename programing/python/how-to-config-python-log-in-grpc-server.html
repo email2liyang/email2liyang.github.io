@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - How to config python log in Grpc Server</title>
+  
+    
+  
+  <meta name="description" content="In Java world, there are different logging frameworks available, e.g: slf4j, log4j, commons logging as well as java standard log, the reason why we have so many log frameworks is because the log module in jdk is not good enough initially. in Python world it's totally different story, most of the time we should use pyth">
+  
+  <link rel="canonical" href="https://www.vipmind.me/programing/python/how-to-config-python-log-in-grpc-server">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span>How to config python log in Grpc Server</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>How to config python log in Grpc Server</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">13 Nov 2019 19:22:33</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>In Java world, there are different logging frameworks available, e.g: <a href="http://www.slf4j.org/">slf4j</a>, <a href="https://logging.apache.org/log4j/2.x/">log4j</a>, <a href="https://commons.apache.org/proper/commons-logging/">commons logging</a> as well as java standard log, the reason why we have so many log frameworks is because the log module in jdk is not good enough initially. in Python world it's totally different story, most of the time we should use python standard <a href="https://docs.python.org/3/library/logging.html">logging module</a>, in <a href="https://github.com/email2liyang/grpc-mate">grpc-mate</a>, we follow the standard way to do logging as well.</p>
+<p><figure><img src="../../images/log.png" alt="log"></figure></p>
+<p>log is very important for a running server, developer rely on the log to know what's going on when the server is running, in <a href="https://github.com/email2liyang/grpc-mate">grpc-mate</a>, I use a yaml file to config the log like below</p>
+<pre><code>version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+loggers:
+  __main__:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+  service.greeter_servicer:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+root:
+  level: INFO
+  handlers: [console]
+  propagate: yes
+</code></pre>
+<p>we could format the log message format to show datetime followed by logger name , then log leven and the actual log message, we could refer what format available in <a href="https://docs.python.org/3/library/logging.html#logrecord-attributes">logrecord-attributes</a>, we could also define the handlers, in this example, I will just out put the log into stdout, it's important we know where the log message comes from, so we could also define differnet loggers and customize the log level for each logger, finally we should define a root logger, if we do not define specific logger, it will reuse the root logger config.</p>
+<p>after define the log config, we could load the into runtime, I achieve this by putting logic below in the <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/server/server.py">grpc server module</a>, so it's configged before we start grpc server</p>
+<pre><code># Create a custom logger
+with open('logging.yaml', 'r') as f:
+    config = yaml.safe_load(f.read())
+    logging.config.dictConfig(config)
+</code></pre>
+<p>now we could define logger for each module, it's recommended to define a logger for each module <code>logger = logging.getLogger(__name__)</code>, in <a href="https://github.com/email2liyang/grpc-mate">grpc-mate</a> I define logger in each servicer</p>
+<ul>
+<li><a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/service/greeter_servicer.py#L6">greeter_servicer.py</a></li>
+<li><a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/service/product_read_servicer.py#L10">product_read_servicer.py</a></li>
+<li><a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/service/product_update_servicer.py#L8">product_update_servicer.py</a></li>
+</ul>
+<p>when we start the grpc server and try to call the greeter service, the server will output log like below</p>
+<pre><code>2019-11-13 19:21:44,320 - __main__ - DEBUG - grpc server started at port 8080
+2019-11-13 19:21:49,430 - service.greeter_servicer - DEBUG - get request local
+
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

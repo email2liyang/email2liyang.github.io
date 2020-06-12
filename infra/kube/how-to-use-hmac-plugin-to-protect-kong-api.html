@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - How to use HMAC Plugin to protect Kong API</title>
+  
+    
+  
+  <meta name="description" content="Kong has lots of plugins available to do varies kind of tasks, Security is a big topic among the plugins , no one wants to expose API to internet without any protection. we use HMAC Plugin to do API level authentication. with HMAC Plugin the password never go through the wire, and we could also enable the body verifica">
+  
+  <link rel="canonical" href="https://www.vipmind.me/infra/kube/how-to-use-hmac-plugin-to-protect-kong-api">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span>How to use HMAC Plugin to protect Kong API</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>How to use HMAC Plugin to protect Kong API</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">30 Dec 2019 22:03:13</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>Kong has <a href="https://docs.konghq.com/hub/">lots of plugins</a> available to do varies kind of tasks, Security is a big topic among the plugins , no one wants to expose API to internet without any protection. we use <a href="https://docs.konghq.com/hub/kong-inc/hmac-auth/">HMAC Plugin</a> to do API level authentication. with <a href="https://docs.konghq.com/hub/kong-inc/hmac-auth/">HMAC Plugin</a> the password never go through the wire, and we could also enable the body verification as an option. this is a good option for us to open API to the public internet</p>
+<p><figure><img src="../../images/kong.png" alt="kong"></figure></p>
+<h2 id="enable-the-hmac-auth-plugin-1">enable the hmac auth plugin</h2>
+<pre><code>apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: hmac-auth
+plugin: hmac-auth
+</code></pre>
+<p>this will enable the plugin in k8s env and we could enable the plugin by putting an annotation value in the ingress yaml file</p>
+<pre><code>annotations:
+    plugins.konghq.com: hmac-auth
+</code></pre>
+<h2 id="config-username-and-password-2">config username and password</h2>
+<p>hmac plugin need a Consumer and 1 or more credentials, the credentials should be attached to the Consumer</p>
+<pre><code>apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: consumer-hmac
+username: api-user
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongCredential
+metadata:
+  name: credential-hmac
+consumerRef: consumer-hmac
+type: hmac-auth
+config:
+  username: whoami1
+  secret: xxxxxxxxxxxxx
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongCredential
+metadata:
+  name: credential-hmac
+consumerRef: consumer-hmac
+type: hmac-auth
+config:
+  username: whoami2
+  secret: xxxxxxxxxxxxx
+</code></pre>
+<p>when we deploy these consumere and credentails, the ingress which enalbe the hmac-auth plugin is protected.</p>
+<h2 id="generate-client-code-to-call-the-server-3">generate client code to call the server</h2>
+<p>to call the hmac-auth protected api, we must generate the client signature and pass it in http header, to generate hmac hash, kong support sha1, sha256,sha384 and sha512, <code>sha1</code> is not recommended as it's not secure, I will use sha256 in this article. like code below we could use password <code>xxxxxxxxxxxxx</code> to generate hash data for any given data</p>
+<pre><code>private String hmacHash(String key, String data)
+      throws Exception {
+    String algorithm = &quot;HmacSHA256&quot;;
+    SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), algorithm);
+    Mac mac = Mac.getInstance(algorithm);
+    mac.init(signingKey);
+    return Base64.getEncoder().encodeToString(mac.doFinal(data.getBytes()));
+  }
+</code></pre>
+<p>with Kong hmac we must pass <code>Date</code> in GMT format through http header and pass <code>Authorization</code> for the calulcated hash, <code>Authorization</code> is formated as <code>hmac username=&quot;whoami1&quot;, algorithm=&quot;hmac-sha256&quot;, headers=&quot;Date&quot;, signature=&quot;hmacHash(dateString, xxxxxxxxxxxxx)&quot;</code></p>
+<ul>
+<li>hmac is telling the server we are using hmac plugin to to authentication</li>
+<li>username=&quot;whoami1&quot; is the user name we created in the KongCredential, then server could located this user's password on server side</li>
+<li>algorithm=&quot;hmac-sha256&quot; will tell server we are using sha265 algorithm to calculate hash</li>
+<li>headers=&quot;Date&quot; will tell server we use Date as the input source to calculate hash</li>
+<li>signature=&quot;hmacHash(dateString, xxxxxxxxxxxxx)&quot; is the signature with result of hmacHash calculated on client side based on &quot;Date&quot; header to send back to server. the server will sueee the same password for <code>whoami1</code> to caluclate hash for &quot;Date&quot; header, if the calculated hash match given signature, auth pass, otherwise auth failed.</li>
+</ul>
+<pre><code>private Map&lt;String, String&gt; headers(String username, String password) throws Exception {
+    Map&lt;String, String&gt; headers = Maps.newLinkedHashMap();
+    DateFormat df = new SimpleDateFormat(&quot;EEE, dd MMM yyyy HH:mm:ss&quot;);
+    df.setTimeZone(TimeZone.getTimeZone(&quot;GMT&quot;));
+    String date = df.format(new Date()) + &quot; GMT&quot;;
+    headers.put(&quot;Date&quot;, date);
+    String rawSign = &quot;Date: &quot; + date;
+
+    String authHeader = String.format(
+        &quot;hmac username=\&quot;%s\&quot;, algorithm=\&quot;hmac-sha256\&quot;, headers=\&quot;Date\&quot;, signature=\&quot;%s\&quot;&quot;,
+        username, hmacHash(password, rawSign));
+
+    headers.put(&quot;Authorization&quot;, authHeader);
+
+    return headers;
+  }
+</code></pre>
+<h2 id="test-auth-in-java-code-4">test auth in java code</h2>
+<p>code below will function well with only Google Guava as a dependency, we could use http client to write more elegant code to handle http request and response.</p>
+<pre><code>  @Test
+  public void testRequest() throws Exception {
+
+    Map&lt;String, String&gt; headers = headers(&quot;whoami1&quot;, &quot;xxxxxxxxxxxxx&quot;);
+    URL url = new URL(&quot;http://api.vipmind.me/hello/v1&quot;);
+    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    con.setRequestMethod(&quot;POST&quot;);
+    con.setDoOutput(true);
+    //set the header
+    headers.entrySet().forEach(entry -&gt; con.setRequestProperty(entry.getKey(), entry.getValue()));
+    //set the timeout
+    con.setConnectTimeout(5000);
+    con.setReadTimeout(5000);
+    //send out the call the server
+    try (OutputStream os = con.getOutputStream()) {
+      byte[] input = Files.toByteArray(new File(Resources.getResource(&quot;data.json&quot;).getFile()));
+      os.write(input, 0, input.length);
+    }
+
+    if (con.getResponseCode() == 200) {
+      //receive response
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(con.getInputStream(), &quot;utf-8&quot;))) {
+        StringBuilder response = new StringBuilder();
+        String responseLine = null;
+        while ((responseLine = br.readLine()) != null) {
+          response.append(responseLine.trim());
+        }
+        System.out.println(response.toString());
+      }
+    } else {
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(con.getErrorStream(), &quot;utf-8&quot;))) {
+        StringBuilder response = new StringBuilder();
+        String responseLine = null;
+        while ((responseLine = br.readLine()) != null) {
+          response.append(responseLine.trim());
+        }
+        System.out.println(response.toString());
+      }
+    }
+
+    con.disconnect();
+  }
+</code></pre>
+<h2 id="test-auth-in-curl-5">test auth in curl</h2>
+<p>we could also construct curl command to call the api</p>
+<pre><code>  @Test
+  public void testCurl() throws Exception {
+    StringBuilder call = new StringBuilder();
+    call.append(&quot;curl -XPOST&quot;);
+    Map&lt;String, String&gt; headers = headers(&quot;whoami1&quot;, &quot;xxxxxxxxxxxxx&quot;);
+    headers.entrySet().forEach(entry -&gt; call
+        .append(&quot; -H '&quot;)
+        .append(entry.getKey())
+        .append(&quot;: &quot;)
+        .append(entry.getValue())
+        .append(&quot;'&quot;));
+    call.append(&quot; -d \&quot;@data.json\&quot;&quot;);
+    call.append(&quot; http://api.vipmind.me/hello/v1&quot;);
+
+    System.out.println(call.toString());
+  }
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

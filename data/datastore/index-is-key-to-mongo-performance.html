@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Index is Key to Mongo Performance</title>
+  
+    
+  
+  <meta name="description" content="I have a data flow to insert about 100M records into mongoDB, I'm using Beam to run on Flink cluster to deal with the the concurrency, for this job I've enable 30 task managers in the beam cluster. I'm expecting this process to complete within 24 hours based on historical experience. but when I start the job and monito">
+  
+  <link rel="canonical" href="https://www.vipmind.me/data/datastore/index-is-key-to-mongo-performance">
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1591956016985' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1591956016985"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../../toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+      </div>
+      <div class="breadcrumb-item">
+        
+        <span>Index is Key to Mongo Performance</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Index is Key to Mongo Performance</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">7 Sep 2019 17:31:19</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>I have a data flow to insert about 100M records into mongoDB, I'm using Beam to run on Flink cluster to deal with the the concurrency, for this job I've enable 30 task managers in the beam cluster. I'm expecting this process to complete within 24 hours based on historical experience. but when I start the job and monitor the process, it does not behave as expected. the mongoDB insert is extramly slow and the mongoDB cluster's load has increased dramatically. the job need to take about 1 year to complete, that's totally not acceptable.Finally I find out that the index fo the target collection in mongoDB is missing, which cause every db insert result in a disk scan, this is getting worse and worse when you inserted more and more data. because everytime when I do a db insert, the mondoDB is need to scan exist data in the collection to check if there is exist record to peform update otherwise perform a fresh insert. after I create the index for the target collection, the mongoDB performance boost up quickly and the server load dropped off dramatically, currently the job is running well and it will be complete within 12 hours.</p>
+<p><figure><img src="../../images/mongodb-logo.png" alt="mongodb-logo"></figure></p>
+<p>MongoDB has veriouse types of <a href="https://docs.mongodb.com/manual/indexes/">indexes</a>， I'm using <a href="https://docs.mongodb.com/manual/core/index-multikey/">multikey indexes</a> in my case because I will need to search by multiple key first to update before I do an insert. there are many good reason to do such upsert types of db operation, one good benifit is that it could make the db operation <a href="https://en.wikipedia.org/wiki/Atomic_commit">atomic</a> and <a href="https://en.wikipedia.org/wiki/Idempotence">idempotent</a>. <a href="https://en.wikipedia.org/wiki/Atomic_commit">atomic</a> and <a href="https://en.wikipedia.org/wiki/Idempotence">idempotent</a> are very important in big data processing system, this could enable the flow to be able to re-run without any problem.</p>
+<p>There is a framework named <a href="https://github.com/MorphiaOrg/morphia">morphia</a> to help us to do this work very easily. we could create the JPA like entity class to manage the mongoDB index in the code.</p>
+<pre><code>@Entity(noClassnameStored = true)
+@Indexes(
+    {
+        @Index(fields = {
+            @Field(&quot;id&quot;),
+            @Field(&quot;key1&quot;),
+            @Field(&quot;key2&quot;),
+            @Field(&quot;key3&quot;)
+        }, options = @IndexOptions(unique = true)),
+        @Index(fields = {
+            @Field(&quot;key1&quot;),
+            @Field(&quot;key2&quot;),
+            @Field(&quot;key3&quot;),
+            @Field(value = &quot;v1&quot;, type = IndexType.DESC)
+        }),
+        @Index(fields = {
+            @Field(&quot;key1&quot;),
+            @Field(&quot;key2&quot;),
+            @Field(&quot;key3&quot;),
+            @Field(value = &quot;v2&quot;, type = IndexType.DESC)
+        })
+        @Index(fields = {
+            @Field(value = &quot;lastUpdated&quot;, type = IndexType.DESC)
+        })
+    }
+)
+public class XXXEntity{}
+</code></pre>
+<p>in XXXEntity, I'm defining 4 indexes , the 1st index is used for upsert lookup the 2nd and 3rd indexes are used for online query and it could order by v1 or v2, if I only need key1, key2 and key3 and v1 or v2, the search performance will be even better, because it's a <a href="https://docs.mongodb.com/manual/core/index-multikey/#covered-queries">covered query</a>. to perform an atomic update in mongoDB, we could do like below, the last parameter means createIfMissing, when we set it to true, <a href="https://github.com/MorphiaOrg/morphia">morphia</a> will insert a new record if the given query could not find any match</p>
+<pre><code>UpdateOperations&lt;XXXEntity&gt; updateOperations = datastore
+        .createUpdateOperations(XXXEntity.class)
+        .setOnInsert(&quot;id&quot;, xxxPojo.getId())
+        .setOnInsert(&quot;key1&quot;, xxxPojo.getKey1())
+        .setOnInsert(&quot;key2&quot;, xxxPojo.getKey2())
+        .setOnInsert(&quot;key3&quot;, xxxPojo.getKey3())
+        .set(&quot;v1&quot;, xxxPojo.getV1())
+        .set(&quot;v2&quot;, xxxPojo.getV2())
+        // set update time based on write (regardless of what caller requested)
+        .set(&quot;lastUpdated&quot;, LocalDateTime.now(Clock.systemUTC()));
+Query&lt;XXXEntity&gt; query = datastore
+        .createQuery(&quot;collectionName&quot;, XXXSumEntity.class)
+        .field(&quot;id&quot;).equal(xxxPojo.getId())
+        .field(&quot;key1&quot;).equal(xxxPojo.getKey1())
+        .field(&quot;key2&quot;).equal(xxxPojo.getKey2())
+        .field(&quot;key3&quot;).equal(xxxPojo.getKey3());
+
+UpdateResults results = datastore.update(query, updateOperations, true);        
+</code></pre>
+<p>because we have defined the index on &quot;id,key1,key2,key3&quot;, the mongoDB do not need to do collection scan for the query, it will use the index to find out the match.</p>
+<p>Before the index is created, I could only insert 5 to 6 record per second, most of the time is spend on the collection scan and the IO load is very heavy, after the index is created, I could insert 2263 records per seconds.</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>
