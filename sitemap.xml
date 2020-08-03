@@ -17,12 +17,17 @@
     </url>
     <url>
         <loc>https://www.vipmind.me/infra/aws</loc>
-        <lastmod>2019-10-04</lastmod>
+        <lastmod>2020-08-03</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://www.vipmind.me/infra/aws/asg-azrebalance-will-impact-eks-node</loc>
         <lastmod>2019-10-04</lastmod>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://www.vipmind.me/infra/aws/using-aws-dms-to-migrate-database-part-1</loc>
+        <lastmod>2020-08-03</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
@@ -276,18 +281,18 @@
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://www.vipmind.me/toc</loc>
-        <lastmod>2020-06-12</lastmod>
+        <loc>https://www.vipmind.me/about</loc>
+        <lastmod>2020-08-03</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://www.vipmind.me/about</loc>
-        <lastmod>2020-06-12</lastmod>
+        <loc>https://www.vipmind.me/toc</loc>
+        <lastmod>2020-08-03</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://www.vipmind.me/index</loc>
-        <lastmod>2020-06-12</lastmod>
+        <lastmod>2020-08-03</lastmod>
         <changefreq>weekly</changefreq>
     </url>
 </urlset>
