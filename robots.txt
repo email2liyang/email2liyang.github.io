@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Disallow: /*downloading
 
-Sitemap: https://www.vipmind.me/sitemap.xml
+Sitemap: /sitemap.xml

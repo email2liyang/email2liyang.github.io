@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - Using AWS DMS to migrate database part 1</title>
+  <title>Mind - Migrate 10T data from On Premise to RDS without interuption</title>
   
-    <meta name="description" content="Migrating database is never an easy task, I've recently migrated 29 databases from 5 different mysql instances into 3 AW... 3 Aug 2020 2 MIN READ What Happen when you access webstie over https when we access a website over https, there is always a complex process happen under the hood between your browser and re... 4 J">
+    <meta name="description" content="we have a mission critical mysql database hosted on premise for many years, as the data growing it has reached more than... 7 Feb 2021 4 MIN READ Using AWS DMS to migrate database part 1 Migrating database is never an easy task, I've recently migrated 29 databases from 5 different mysql instances into 3 AW... 3 Aug 202">
   
-  <link rel="canonical" href="https://www.vipmind.me/index">
+  
   
   <link rel="shortcut icon" href="./images/favicon/favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="./images/favicon/apple-touch-icon.png">
@@ -30,7 +30,7 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
-  <link href='./styles/main.min.css?v=1596459448698' rel='stylesheet' type='text/css'>
+  <link href='./styles/main.min.css?v=1613378336008' rel='stylesheet' type='text/css'>
   
   <style></style>
 
@@ -39,7 +39,7 @@
 <body>
 
 
-<script async type="text/javascript" language="javascript" src="./plugins/plugins.nocache.js?v=1596459448698"></script>
+<script async type="text/javascript" language="javascript" src="./plugins/plugins.nocache.js?v=1613378336008"></script>
 <iframe src="javascript:''" id="__gwt_historyFrame"
         style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
 <!--[if lt IE 8]>
@@ -74,6 +74,24 @@
 </div><div class="l-cards b53" data-l-t="p" data-l-cp="1" data-l-mp="5">
   <div class="l-cards__content max-width-md cards-view">
     <div class="grid-3_sm-2_xs-1-equalHeight post-list" data-l-en="ilc" data-orrc=".">
+      <div class="col" data-l-en="irt">
+        <article class="post-card">
+          <div class="post-body">
+            <a class="thumbnail" href="./data/datastore/migrate-10t-data-from-on-premise-to-rds-without-interuption.html" data-l-en="tna"><img src="./data/datastore/../../infra/aws/MySQL-Logo.wine.png" data-l-en="tni" alt="MySQL Logo wine"></a>
+            <a href="./data/datastore/migrate-10t-data-from-on-premise-to-rds-without-interuption.html" data-l-en="bda">
+              <h3 class="title" data-l-en="ttl">Migrate 10T data from On Premise to RDS without interuption</h3>
+              <p class="brief" data-l-en="csm">we have a mission critical mysql database hosted on premise for many years, as the data growing it has reached more than...</p>
+            </a>
+          </div>
+          <div class="post-footer">
+            <div class="meta">
+              <img src="./images/default-avatar.jpg" data-l-en="avt" title="Ivan" alt="default avatar">
+              <span class="created" data-l-en="cdt">7 Feb 2021</span>
+            </div>
+            <span class="reading-time" data-l-en="rdt">4 MIN READ</span>
+          </div>
+        </article>
+      </div>
       <div class="col" data-l-en="irt">
         <article class="post-card">
           <div class="post-body">
@@ -215,24 +233,6 @@
               <span class="created" data-l-en="cdt">7 Dec 2019</span>
             </div>
             <span class="reading-time" data-l-en="rdt">2 MIN READ</span>
-          </div>
-        </article>
-      </div>
-      <div class="col" data-l-en="irt">
-        <article class="post-card">
-          <div class="post-body">
-            <a class="thumbnail" href="./data/flink/time-and-window-in-flink-stream-application.html" data-l-en="tna"><img src="./data/flink/../../images/flink.png" data-l-en="tni" alt="flink"></a>
-            <a href="./data/flink/time-and-window-in-flink-stream-application.html" data-l-en="bda">
-              <h3 class="title" data-l-en="ttl">Time and Window in Flink Stream Application</h3>
-              <p class="brief" data-l-en="csm">Tyler Akidau published Streaming 101: The world beyond batch up on Oreilly in 2015, this is the fundamental theory of Go...</p>
-            </a>
-          </div>
-          <div class="post-footer">
-            <div class="meta">
-              <img src="./images/default-avatar.jpg" data-l-en="avt" title="Ivan" alt="default avatar">
-              <span class="created" data-l-en="cdt">5 Dec 2019</span>
-            </div>
-            <span class="reading-time" data-l-en="rdt">3 MIN READ</span>
           </div>
         </article>
       </div>
