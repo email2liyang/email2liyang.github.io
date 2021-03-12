@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - KongIngress in Kong</title>
+  <title>Mind - 6 ways to declare js function</title>
   
     
   
-  <meta name="description" content="It has been about a year since I last configed Kong Ingress Controller in kubernetes, yesterday when I was trying to config Kong Ingress controller to expose an API on kubernetes, I met a new concept KongIngress. Kong is an API gateway platform , it start to support kubernetes since May 2018,it's a great platform to ma">
+  <meta name="description" content="normal function function sayHello(firstName, lastName) { return `hello ${firstName} ${lastName}`; } function expression const sayHello2 = function(firstName, lastName) { return `hello ${firstName} ${lastName}`; }; arrow function const sayHello3 = (firstName, lastName) =&amp;gt; `hello ${firstName} ${lastName}`; if you want">
   
   
   
@@ -91,15 +91,15 @@
       </div>
 
       <div class="breadcrumb-item">
-        <a href="../../infra.html">Infra</a>
+        <a href="../../programing.html">Programing</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <a href="../kube.html">Kube</a>
+        <a href="../javascript.html">Javascript</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>KongIngress in Kong</span>
+        <span>6 ways to declare js function</span>
       </div>
 
     </div>
@@ -113,85 +113,58 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>KongIngress in Kong</h1>
+    <h1>6 ways to declare js function</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">7 Dec 2019 14:02:59</span>
+      <span class="updated">10 Mar 2021 20:12:27</span>
     </div>
+    <div class="cover" style="--aspect-ratio:16/9; background-image: url('../../programing/javascript/../../images/JavaScript_logo_2.png');"></div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>It has been about a year since I last configed Kong Ingress Controller in kubernetes, yesterday when I was trying to config Kong Ingress controller to expose an API on kubernetes, I met a new concept <code>KongIngress</code>.</p>
-<p><a href="https://konghq.com/">Kong</a> is an API gateway platform , it start to <a href="https://konghq.com/blog/kubernetes-ingress-controller-for-kong/">support kubernetes</a> since May 2018,it's a great platform to manage APIs, Kong has a plugin system to offer large amount of capability to manage open APIs, e.g: authentication, load balancing, traffic control, analytics, logging etc. with Kong , the developer could focus on business logic development and let Kong to do all the generic api management work.</p>
-<p><figure><img src="../../images/kong.png" alt="kong"></figure></p>
-<p>Kong Ingress controllere could be deployed into multiple platforms, e.g EKS, GKE, AKS etc when it's deployed to EKS , Kong Ingress controller will create a ELB it process all the request on layer4, the ELB could handle both http and https , the port will map to NodePort in kubernetes ec2 instance</p>
-<p><figure><img src="../../images/elb.png" alt="elb"></figure></p>
-<pre><code>apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {&quot;apiVersion&quot;:&quot;v1&quot;,&quot;kind&quot;:&quot;Service&quot;,&quot;metadata&quot;:{&quot;annotations&quot;:{},&quot;name&quot;:&quot;kong-proxy&quot;,&quot;namespace&quot;:&quot;kong&quot;},&quot;spec&quot;:{&quot;ports&quot;:[{&quot;name&quot;:&quot;kong-proxy&quot;,&quot;port&quot;:80,&quot;protocol&quot;:&quot;TCP&quot;,&quot;targetPort&quot;:8000},{&quot;name&quot;:&quot;kong-proxy-ssl&quot;,&quot;port&quot;:443,&quot;protocol&quot;:&quot;TCP&quot;,&quot;targetPort&quot;:8443}],&quot;selector&quot;:{&quot;app&quot;:&quot;kong&quot;},&quot;type&quot;:&quot;LoadBalancer&quot;}}
-  name: kong-proxy
-  namespace: kong
-  selfLink: /api/v1/namespaces/kong/services/kong-proxy
-spec:
-  clusterIP: xxx.xxx.xxx.xxx
-  externalTrafficPolicy: Cluster
-  ports:
-  - name: kong-proxy
-    nodePort: 30232
-    port: 80
-    protocol: TCP
-    targetPort: 8000
-  - name: kong-proxy-ssl
-    nodePort: 32021
-    port: 443
-    protocol: TCP
-    targetPort: 8443
-  selector:
-    app: kong
-  sessionAffinity: None
-  type: LoadBalancer
-status:
-  loadBalancer:
-    ingress:
-    - hostname: xxxxx.xxxx.elb.amazonaws.com
+      
+<h2 id="normal-function-1">normal function</h2>
+<pre><code>function sayHello(firstName, lastName) {
+  return `hello ${firstName} ${lastName}`;
+}
 </code></pre>
-<p>each Kong Ingress controller will monitor the Ingress resources in all the namespaces in the EKS clustter and create route rull based on Ingress resources, Kong Ingress controller could live other ingress controller as well, we need to speicfy <code>kubernetes.io/ingress.class: &quot;kong&quot;</code> in Ingress annotation to tell Kong to react on this Ingress creation</p>
-<p>previously the Ingress below will work, it will route all the request match path <code>/api</code> to service my-api on port 9000</p>
-<pre><code>apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: my-api
-  namespace: api
-  annotations:
-    kubernetes.io/ingress.class: &quot;kong&quot;
-
-spec:
-  rules:
-  - host: api.vipmind.me
-    http:
-      paths:
-      - path: /api
-        backend:
-          serviceName: my-api
-          servicePort: 9000
+<h2 id="function-expression-2">function expression</h2>
+<pre><code>const sayHello2 = function(firstName, lastName) {
+  return `hello ${firstName} ${lastName}`;
+};
 </code></pre>
-<p>when we upgrade to Kong 1.2, it stops working, all the path we got in service <code>my-api</code> is just <code>/</code>, here comes <code>KongIngress</code> to resolve the issue, we need to first create a <code>KongIngress</code> resources like below</p>
-<pre><code>apiVersion: configuration.konghq.com/v1
-kind: KongIngress
-metadata:
-  name: api-kong-ingress
-  namespace: api
-route:
-  strip_path: false
+<h2 id="arrow-function-3">arrow function</h2>
+<pre><code>const sayHello3 = (firstName, lastName) =&gt; `hello ${firstName} ${lastName}`;
 </code></pre>
-<p>then patch <code>configuration.konghq.com: &quot;api-kong-ingress&quot;</code> as Ingress annotation to avoid Kong to strip the path.</p>
-<p><code>KongIngress</code> is acting as an extenion of Ingress resources,it could also be used as a way to remap url for banckend services, please see <a href="https://github.com/Kong/kubernetes-ingress-controller/blob/master/docs/references/custom-resources.md#kongingress">KongIngress custom resources </a> for details.</p>
+<p>if you want to return an object in arrow function, we could do something like below</p>
+<pre><code>const makeAToy = (color, size) =&gt; ({ toyColor: color, toySize: size });
+</code></pre>
+<h2 id="immediately-invoked-function-expression-4">Immediately Invoked Function Expression</h2>
+<p>the function will be executed immediately</p>
+<pre><code>(function(firstName, lastName) {
+  console.info(`hello ${firstName} ${lastName}`);
+})('Amy', 'Li');
+</code></pre>
+<h2 id="methods-in-object-5">methods in object</h2>
+<pre><code>const greeting = {
+  word: 'greeting',
+  sayHello1(firstName, lastName) {
+    console.log(`${this.word} ${firstName} ${lastName}`);
+  },
+  sayHello2(firstName, lastName) {
+    console.log(`${this.word} ${firstName} ${lastName}`);
+  },
+  sayHello3: (firstName, lastName) =&gt; {
+    console.log(`${greeting.word} ${firstName} ${lastName}`);
+  },
+};
+</code></pre>
+<h2 id="call-back-function-6">call back function</h2>
+<pre><code>setTimeout(() =&gt; console.log('time to do something'), 1000);
+</code></pre>
     </div>
   </div>
 </div>
