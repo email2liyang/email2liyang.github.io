@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Writing Kubernetes Operator in Python with Kopf</title>
+  
+    
+  
+  <meta name="description" content="Kubernetes has an operator pattern, the operator is aimed to be developed by domain expert to leverage the kubernetes automation and domain skills to resolve speicific problems. CoreOS also developed a operator framework to help to develop kubernetes operator. but unfortunately it's written in go language and I don't k">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1613378336008' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1613378336008"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../infra.html">Infra</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../kube.html">Kube</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>Writing Kubernetes Operator in Python with Kopf</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Writing Kubernetes Operator in Python with Kopf</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">7 Oct 2019 19:47:50</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>Kubernetes has an <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">operator pattern</a>, the operator is aimed to be developed by domain expert to leverage the kubernetes automation and domain skills to resolve speicific problems. CoreOS also developed a operator framework to help to develop kubernetes operator. but unfortunately it's written in <a href="https://golang.org/">go language</a> and I don't know <a href="https://golang.org/">go language</a>. luckly I meet <a href="https://kopf.readthedocs.io/en/latest/">Kopf</a> when reading some technical articles, it's an kubernetes opeerator framework written in python and super easy to use.</p>
+<p><figure><img src="../../images/kube-operator-on-python.png" alt="kube-operator-on-python"></figure></p>
+<p>I'm in charge of a complex GRPC microservice based data processing system deployed to <a href="https://aws.amazon.com/eks/">AWS EKS</a>, the Kubernetes cluster is doing a fantanstic job on the service orchestration, however one challenge I'm facing is the service discovery. all the <a href="https://grpc.io/">GRPC</a> are within the same EKS cluster and I rely on kubernetes service as a static endpoint to act as grpc endpoint, this works very well , everytime I redeploy any microservice, I don't need to care about what's the pod's ip, the service will balance the request to the live pods out of box, but the service is just an random ip within kubernetes cluster, it's not easy to to understand which ip map to which service, so we assign each service ip to a meaning full dns name and use the dns name in the code as the grpc service endpoint. for example, I have a service <code>hello-world</code> like below</p>
+<pre><code>NAME          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+hello-world   NodePort   10.108.222.86   &lt;none&gt;        8000:31022/TCP   15s
+</code></pre>
+<p>every time I deploy a service into kubernetes cluster, I will have to add a dns record into route53</p>
+<pre><code>kube-hello-world.vipmind.me -&gt; 10.108.222.86
+</code></pre>
+<p>before I write the kubernetes operator, I have to do it manually or write a terraform script to apply it. I always wondering if there is any way to do it automatically.<br />
+when I meet <a href="https://kopf.readthedocs.io/en/latest/">Kopf</a> I think it's time to open the door.my requirement is simple</p>
+<ul>
+<li>when a new service is deployed to my eks cluster, I want to create a new dns entry <code>kube-${service-name}.vipmind.me</code> point to the service ip</li>
+<li>when a service is deleted from my eks cluster, I want to delete the dns entry <code>kube-${service-name}.vipmind.me</code> point to the service ip</li>
+</ul>
+<p>I could achieve this by onle 87 lines of python code in <a href="https://github.com/email2liyang/kubernetes-service-dns-exporter/blob/master/kube_service_dns_exporter.py">kube_service_dns_exporter.py</a> , let's break them down to explain the details</p>
+<ul>
+<li>use decorator <code>@kopf.on.create('', 'v1', 'services')</code> to tell kopf that I want to monitor api group <code>''</code> or <code>'core'</code> , version <code>'v1'</code>, kind <code>'services'</code>, when the any service is created the function <code>create_fn</code> will be called.</li>
+<li>the parameters in the function are all keyword based parameter, and I could all the service metadata, spec etc from the parameter.</li>
+<li>inside function <code>create_fn</code> I could extract the servcie name from <code>meta['name']</code> and service ip from <code>spec['clusterIP']</code></li>
+<li>I could pass service_name and service_ip field into function route53_dns to create the dns record in route53</li>
+<li>in function <code>route53_dns</code>, I'm using <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/route53.html#Route53.Client.change_resource_record_sets">boto3's route53 client</a> to create the dns record , boto3 is stable now and it's recommended to use boto3 over boto if we are developing new project</li>
+<li>after create the dns record I could use <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/route53.html#Route53.Client.get_change">get_change</a> funciton to monitor the the process.</li>
+<li>we could also use logger parameter from <code>create_fn</code> to attach event into kubernetes service event list <code>logger.info(f&quot;deleted dns {result[0]}  point to {spec['clusterIP']}&quot;)</code> will attach an event like below</li>
+</ul>
+<pre><code>kubectl describe svc hello-world -n test
+Name:                     hello-world
+Namespace:                test
+Labels:                   &lt;none&gt;
+Annotations:              kopf.zalando.org/last-handled-configuration={&quot;spec&quot;: {&quot;ports&quot;: [{&quot;name&quot;: &quot;web&quot;, &quot;protocol&quot;: &quot;TCP&quot;, &quot;port&quot;: 8000, &quot;targetPort&quot;: 8000, &quot;nodePort&quot;: 31022}], &quot;selector&quot;: {&quot;app&quot;: &quot;hello-world&quot;}, &quot;clusterIP...
+                          kubectl.kubernetes.io/last-applied-configuration={&quot;apiVersion&quot;:&quot;v1&quot;,&quot;kind&quot;:&quot;Service&quot;,&quot;metadata&quot;:{&quot;annotations&quot;:{},&quot;name&quot;:&quot;hello-world&quot;,&quot;namespace&quot;:&quot;test&quot;},&quot;spec&quot;:{&quot;ports&quot;:[{&quot;name&quot;:&quot;web&quot;,&quot;port&quot;:8000,&quot;p...
+Selector:                 app=hello-world
+Type:                     NodePort
+IP:                       10.108.222.86
+Port:                     web  8000/TCP
+TargetPort:               8000/TCP
+NodePort:                 web  31022/TCP
+Endpoints:                172.17.0.4:8000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:
+  Type    Reason   Age   From  Message
+  ----    ------   ----  ----  -------
+  Normal  Logging  41s   kopf  creating dns for service hello-world which point to ip 10.108.222.86
+  Normal  Logging  4s    kopf  route53 record {'ResponseMetadata': {'RequestId': '4585fae2-2b01-4d5e-b77b-72e628ed1860', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '4585fae2-2b01-4d5e-b77b-72e628ed1860', 'content-type': 'text/xml', 'content-length': '336', 'date': 'Mon, 07 Oct 2019 09:34:11 GMT'}, 'RetryAttempts': 0}, 'ChangeInfo': {'Id': '/change/C2QQJVYW684DNC', 'Status': 'INSYNC', 'SubmittedAt': datetime.datetime(2019, 10, 7, 9, 33, 36, 564000, tzinfo=tzutc()), 'Comment': 'CREATE dns record for kube-hello-world.vipmind.me point to 10.108.222.86'}}
+  Normal  Logging  4s    kopf  created dns kube-hello-world.vipmind.me  point to 10.108.222.86
+  Normal  Logging  4s    kopf  All handlers succeeded for creation.
+  Normal  Logging  4s    kopf  Handler 'create_fn' succeeded.
+</code></pre>
+<ul>
+<li>use decorator <code>@kopf.on.delete('', 'v1', 'services')</code> to tell kopf that I want to monitor api group <code>''</code> or <code>'core'</code> , version <code>'v1'</code>, kind <code>'services'</code>, when the any service is deleted the function <code>delete_fn</code> will be called.</li>
+<li>to test the operator locally we could run command below to start the operator locally and use <a href="https://github.com/kubernetes/minikube">minikube</a> to do the integration test</li>
+</ul>
+<pre><code>export hosted_zone_id=xxxxxxxxxxxx &amp;&amp; \
+export domain_name=vipmind.me &amp;&amp; \
+export domain_prefix=kube &amp;&amp; \
+export aws_access_key_id=xxxxxxxxxxxxxxx &amp;&amp; \
+export aws_secret_access_key=xxxxxxxxxxxxxxxxxxxx &amp;&amp; \
+kopf run kube_service_dns_exporter.py --verbose
+</code></pre>
+<p>Check out <a href="https://www.vipmind.me/infra/kube/deploy-kubernetes-operator-into-aws-eks-cluster.html">this article</a> to see how to deploy it into kubernetes cluster</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

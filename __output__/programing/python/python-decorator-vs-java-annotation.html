@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Python Decorator vs Java Annotation</title>
+  
+    
+  
+  <meta name="description" content="Python Decorator and Java Annotation have the same syntax, when I see Python Decorator the first time, I assume it's behave the same as Java Annotation, but indeed this is wrong Python Decorator is just syntactic sugar for passing a function to another function and replacing the first function with the result, Java Ann">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1613378336008' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1613378336008"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../programing.html">Programing</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../python.html">Python</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>Python Decorator vs Java Annotation</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Python Decorator vs Java Annotation</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">3 Nov 2019 13:44:18</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>Python Decorator and Java Annotation have the same syntax, when I see Python Decorator the first time, I assume it's behave the same as Java Annotation, but indeed this is wrong</p>
+<p><figure><img src="../../images/python_and_java.png" alt="python_and_java"></figure></p>
+<p>Python Decorator is just syntactic sugar for passing a function to another function and replacing the first function with the result, Java Annotation is just a meta data store, it could store additional information about the java artifacts(like class, method), we could have logic based on the java annotations</p>
+<h2 id="pytnon-decorator-1">Pytnon Decorator</h2>
+<p>functions are first class object in python language, so we could pass funciton as object as parameter, return function as result, this is the foundation of python decorator. so the code like below</p>
+<pre><code>def py_decorator(func):
+    def wrapper():
+        print(&quot;before the function is called.&quot;)
+        func()
+        print(after the function is called.&quot;)
+    return wrapper
+def greet():
+    print(&quot;hello!&quot;)
+
+greet = py_decorator(greet)    
+</code></pre>
+<p>is the same as</p>
+<pre><code>@py_decorator
+def greet():
+    print(&quot;hello!&quot;)
+</code></pre>
+<p>it's just an syntactic sugar, there are more useful tips about python decorators in <a href="https://realpython.com/primer-on-python-decorators/">real python</a></p>
+<h2 id="java-annotation-2">Java Annotation</h2>
+<p>Java Annotation is just a way to add comments to the java class, or method or attribute, it could avaialbe in java compile time or jvm runtime, to declare a java annotation, we could do like below</p>
+<pre><code>import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ReadOnly {
+
+}
+</code></pre>
+<p>this annotation will define an annotation named <code>ReadOnly</code>, this annotation could be applied on java attribute, the annotation will be avaialble in jvm runtime. after we define the annotation, we could apply this in java code like below</p>
+<pre><code>Class DBFactory {
+
+@ReadOnly
+private DBProvider dbProvider;
+}
+</code></pre>
+<p>this is like add a comment on attribute <code>dbProvider</code>  in jvm that this field is readonly nothing else, if we want any behaviour about this annotation, we have to add logic at runtime to control the behavior , thsi is the foundation of <a href="https://github.com/google/guice">Google Guice</a>, Google Guice heavily rely on java annotation to config the java runtime behavoiur and do dependency injection for us.</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

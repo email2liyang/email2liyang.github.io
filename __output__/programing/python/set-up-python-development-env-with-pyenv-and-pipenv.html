@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Set up Python Development Env with pyenv and pipenv</title>
+  
+    
+  
+  <meta name="description" content="It's very confusing for the beginner to understand how python works with the dependencies and there are lots of tools avaialble in the market try to resolve this problem, for example: pyenv, virtualenv, pyenv-virtualenv, virtualenvwrapper, pyenv-virtualenvwrapper, pipenv, you could check the differnece from stackoverfl">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1613378336008' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1613378336008"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../programing.html">Programing</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../python.html">Python</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>Set up Python Development Env with pyenv and pipenv</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Set up Python Development Env with pyenv and pipenv</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">1 Sep 2019 10:34:30</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>It's very confusing for the beginner to understand how python works with the dependencies and there are lots of tools avaialble in the market try to resolve this problem, for example: <a href="https://github.com/yyuu/pyenv">pyenv</a>, <a href="https://pypi.python.org/pypi/virtualenv">virtualenv</a>, <a href="https://github.com/yyuu/pyenv-virtualenv">pyenv-virtualenv</a>, <a href="https://pypi.python.org/pypi/virtualenvwrapper">virtualenvwrapper</a>, <a href="https://github.com/yyuu/pyenv-virtualenvwrapper">pyenv-virtualenvwrapper</a>, <a href="https://pypi.python.org/pypi/pipenv">pipenv</a>, you could check the differnece from <a href="https://stackoverflow.com/questions/41573587/what-is-the-difference-between-venv-pyvenv-pyenv-virtualenv-virtualenvwrappe">stackoverflow</a></p>
+<p><figure><img src="../../images/python-virtualenv.png" alt="python-virtualenv"></figure></p>
+<p>There are 3 main problems these tools are trying to resolve.</p>
+<ul>
+<li>how to choose python version for your project
+<ul>
+<li>normally differnet OS may have different build in  python version and it's always avalialbe in your path</li>
+<li>but for some project , the developer want to choose a different version of python.</li>
+</ul>
+</li>
+<li>how to manage python dependencies for your project
+<ul>
+<li>python is managing it's dependencies globally by default.</li>
+<li>one project may want to use version 1 of lib A, but other project may want to use version 2 of lib A, if we still manage the dependencies globally, it will get conflict</li>
+<li>python tools try to create a virtual env for each specific project, so that each project could manage it's own dependencies. lots of tools , like <a href="https://pypi.python.org/pypi/virtualenv">virtualenv</a>, <a href="https://github.com/yyuu/pyenv-virtualenv">pyenv-virtualenv</a>, <a href="https://pypi.python.org/pypi/virtualenvwrapper">virtualenvwrapper</a>, <a href="https://github.com/yyuu/pyenv-virtualenvwrapper">pyenv-virtualenvwrapper</a> they are all trying to resolve this problem, starting from python 3.3 there is a build in module named <a href="https://docs.python.org/3/library/venv.html">venv</a> to help developer to create virtual env too. developer could execute command <code>python3 -m venv</code> to do this.</li>
+</ul>
+</li>
+<li>how install 3rd party dependencies for your project
+<ul>
+<li><a href="https://pypi.org/project/pip/">pip</a> has become the de facto  standard python dependency management tool.</li>
+<li>pip could use <code>requirements.txt</code> to manage it's dependencies but it <a href="https://www.kennethreitz.org/essays/a-better-pip-workflow">can be problematic</a> , that's why <a href="https://github.com/pypa/pipenv">pipenv</a> was invented</li>
+</ul>
+</li>
+</ul>
+<p>After a long journey with all of these tools , I finally select <a href="https://github.com/yyuu/pyenv">pyenv</a> and <a href="https://github.com/pypa/pipenv">pipenv</a> to manage my python developmenet env.</p>
+<p>I could use pyenv to manage different version of python I could use and install any python version I want into my system. To list all available python versions to install, issue command <code>pyenv install -l</code>, it will give me a long list of avaialble python versions</p>
+<pre><code>Available versions:
+  2.1.3
+  2.2.3
+  2.3.7
+  ...
+</code></pre>
+<p>to setup a python version for given project, just go to project folder and exec command<br />
+<code>pyenv local 3.6.8</code>, this will set my project to use python version 3.6.8 by generating a file named <code>.python-version</code></p>
+<p>Next I could use pipenv to setup my virutal env and manage python dependencies.<br />
+I have a system env setup as <code>PYENV_VIRTUALENV_INIT=1</code> in my <code>${HOME}/.bash_profile</code> so that pipenv will create venvin folder <code>.venv</code> insidee my project so that my project is just self contained. then I could issue command <code>pipenv install grpcio</code> to install grpc support for python. this command will generate 2 files <code>Pipfile</code> and <code>Pipfile.lock</code>, these 2 files are used to manage python dependencies and expected to be managed by version control system like <code>git</code>. pipenv could also generate <code>requirements.txt</code> to integrate with <code>pip</code> by command <code>pipenv lock -r &gt; requirements.txt</code></p>
+<p>After installed all the python dependencies , we could issue command <code>pipenv shell</code> to activate current python env and it will load dependencies from pipenv managed virtual env<br />
+<figure><img src="../../images/activate-pipenv.png" alt="activate-pipenv"></figure></p>
+<p>There is one drawback when you use pipenv, pipenv is trying to analyse the python dependency and there is a concept named locking in pipenv, for now the locking process may be slow for some python dependency</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>

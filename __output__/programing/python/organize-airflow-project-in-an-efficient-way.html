@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Organize Airflow Project in an Efficient Way</title>
+  
+    
+  
+  <meta name="description" content="In last article I described how to deploy apache airflow into kubernetes, in this article I'm going to talk about how to organize the airflow project in an efficient way so that it's easy to mantain by both development team and devOps team Python Dependency Management Airflow is written in python if you start a fresh p">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1613378336008' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1613378336008"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../programing.html">Programing</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../python.html">Python</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>Organize Airflow Project in an Efficient Way</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Organize Airflow Project in an Efficient Way</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">16 Sep 2019 19:23:40</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>In <a href="https://www.vipmind.me/infra/kube/deploy-apache-airflow-cluster-into-kubernetes.html">last article</a> I described how to deploy apache airflow into kubernetes, in this article I'm going to talk about how to organize the airflow project in an efficient way so that it's easy to mantain by both development team and devOps team</p>
+<p><figure><img src="../../images/airflow-on-python.png" alt="airflow-on-python"></figure></p>
+<h2 id="python-dependency-management-1">Python Dependency Management</h2>
+<p>Airflow is written in python if you start a fresh project, I recommend to use python 3, as python 2 will be end of life in 2020. I also recommand to use pipenv to manage python dependencies rather than pip, you could refrence <a href="https://www.vipmind.me/programing/python/set-up-python-development-env-with-pyenv-and-pipenv.html">this article</a> to see how to setup python development env with pypenv and pipenv. as this article is written, I'm using python 3.6 and airflow 1.10.2 to build my airflow jobs. to install airflow by pipenv, we need a system env <code>AIRFLOW_GPL_UNIDECODE=yes</code> before run <code>pipenv install apache-airflow</code>, developers will have their own flexibility to install any python dependencies locally and in the end, we could have a command to export all the dependencies into <code>requirements.txt</code> . the command to export python dependencies is <code>AIRFLOW_GPL_UNIDECODE=yes pipenv lock -r &gt; requirements.txt</code> after we have <code>requirements.txt</code> , we could list it as a build artifact and install them all in the customised  airflow image</p>
+<h2 id="airflow-project-structures-2">Airflow Project Structures</h2>
+<ul>
+<li>Airflow's main concept is called <a href="https://en.wikipedia.org/wiki/Directed_acyclic_graph">Directed Acyclic Graph (DAG)</a>, it's recommended to have a folder named dags to hold all the dags for the airflow project and keep the dag as simple as possible, many small dags are better than a large complex dag to maintain</li>
+<li>Airflow also have a <a href="https://airflow.apache.org/plugins.html">plugins</a> concept , it's recommended to keep complex logic as a plugin and reuse it in DAG.</li>
+<li>apart from these 2 folder, <a href="https://github.com/email2liyang/airflow-kubernetes">airflow-kubernetes</a> offer some super handy location to help developers to resolve some generic problems, I recommend to have a config folder under project root folder
+<ul>
+<li>in config folder we could have a folder named <code>init</code>, I've implemented a SystemV sytle init script to  help developer to init airflow system after airflow webserver started, these script will be run under linux user name <code>airflow</code>, developer could leverage this system to init airflow config e.g: connections.</li>
+<li>in config folder, we could also have a folder named <code>super_init</code>, the script under <code>super_init</code> could be executed under linux username <code>root</code>, this is super useful in kubernetes env, because the ip of any airflow work will  get changed after each deployment and airflow webserver depends on airflow work's hostname to communicate with each work to pull task logs, we could use this system to help airflow webserver to resolve each workre's hostname by having a script like content below under <code>super_init</code> dir</li>
+</ul>
+</li>
+</ul>
+<pre><code>kubectl get po -n airflow -o wide \
+| grep airflow-worker \
+| awk '{printf(&quot;%s\t%s\n&quot;,$6,$1)}'&gt;&gt; /etc/hosts
+</code></pre>
+<ul>
+<li>it's better to have a Makefile in the root of the project folder so that developer could put some  useful command in the Makefile and it's also a good way of code as document</li>
+<li>developer could have their own flexibility to put any other fodlers in the project</li>
+</ul>
+<h2 id="docker-image-management-3">Docker Image Management</h2>
+<p>The image  I provide in <a href="https://github.com/email2liyang/airflow-kubernetes">airflow-kubernetes</a> is a generic airflow image, it just provide python and airflow runtime on linux box. I recommand to maintain a custome airflow image which extends from <a href="https://cloud.docker.com/u/email2liyang/repository/docker/email2liyang/docker-airflow">docker-airflow</a> and push to it's own private docker registry, e.g: <a href="https://cloud.google.com/container-registry/">GCR</a> or <a href="https://aws.amazon.com/ecr/">ECR</a> because</p>
+<ul>
+<li>developer may want to install custom software in the image</li>
+<li>developer may want need a way to install 3rd party python dependencies into the image which is specified in <code>requirements.txt</code></li>
+<li>developer may want to load some custom config into ariflow config</li>
+<li>developer may want to put some credentials into the image based on business requirement</li>
+<li>developer may also  want to have a way to version their own airflow deployment rather than using a base image.</li>
+<li>in a multi workers airflow cluster, it is required that all the python code for airflow are exactly the same across the node, so it's good to build airflow jobs and package all the python code as an artifact , when we build a new image , we could pull the latest artifact and put them into related dirs, then when we deploy the image into kubernetes cluster, we are sure that the python code are exactly the same across different airflow worker nodes</li>
+</ul>
+<p>to maintain a custom airflow image is easy, just have a Dockerfile start with <code>FROM email2liyang/docker-airflow:1.10.2</code>, then you could start to customise your own image to deploy your own business logic into your airflow cluster.</p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>
