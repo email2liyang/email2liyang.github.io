@@ -15,9 +15,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - A journey of fixing all eks worker nodes stuck in NotReady status</title>
+  <title>Mind - How to enable EFS support in Fargate for EKS</title>
   
-    <meta name="description" content="AWS has released fargate support for EKS for more than a year, I think it should be stable now and I'm investigating on ... 28 May 2021 4 MIN READ Use Asyncio to accelerate the download script I have a task to download 200M images from provider's image server as quick as possible, generally we use requests lib t... 3 M">
+    <meta name="description" content="Fargate for EKS is great serverless service from AWS, but the nature of the serverless service is ephemeral, and there i... 6 Jun 2021 8 MIN READ A journey of fixing all eks worker nodes stuck in NotReady status AWS has released fargate support for EKS for more than a year, I think it should be stable now and I'm inves">
   
   
   
@@ -30,7 +30,7 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
-  <link href='./styles/main.min.css?v=1622209303735' rel='stylesheet' type='text/css'>
+  <link href='./styles/main.min.css?v=1622967210769' rel='stylesheet' type='text/css'>
   
   <style></style>
 
@@ -39,7 +39,7 @@
 <body>
 
 
-<script async type="text/javascript" language="javascript" src="./plugins/plugins.nocache.js?v=1622209303735"></script>
+<script async type="text/javascript" language="javascript" src="./plugins/plugins.nocache.js?v=1622967210769"></script>
 <iframe src="javascript:''" id="__gwt_historyFrame"
         style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
 <!--[if lt IE 8]>
@@ -71,9 +71,27 @@
       <a href="./about.html">About</a>
     </div>
   </div>
-</div><div class="l-cards b53" data-l-t="p" data-l-cp="1" data-l-mp="5">
+</div><div class="l-cards b53" data-l-t="p" data-l-cp="1" data-l-mp="6">
   <div class="l-cards__content max-width-md cards-view">
     <div class="grid-3_sm-2_xs-1-equalHeight post-list" data-l-en="ilc" data-orrc=".">
+      <div class="col" data-l-en="irt">
+        <article class="post-card">
+          <div class="post-body">
+            <a class="thumbnail" href="./infra/aws/how-to-enable-efs-support-in-fargate-for-eks.html" data-l-en="tna"><img src="./infra/aws/../../images/efs.png" data-l-en="tni" alt="efs"></a>
+            <a href="./infra/aws/how-to-enable-efs-support-in-fargate-for-eks.html" data-l-en="bda">
+              <h3 class="title" data-l-en="ttl">How to enable EFS support in Fargate for EKS</h3>
+              <p class="brief" data-l-en="csm">Fargate for EKS is great serverless service from AWS, but the nature of the serverless service is ephemeral, and there i...</p>
+            </a>
+          </div>
+          <div class="post-footer">
+            <div class="meta">
+              <img src="./images/default-avatar.jpg" data-l-en="avt" title="Ivan" alt="default avatar">
+              <span class="created" data-l-en="cdt">6 Jun 2021</span>
+            </div>
+            <span class="reading-time" data-l-en="rdt">8 MIN READ</span>
+          </div>
+        </article>
+      </div>
       <div class="col" data-l-en="irt">
         <article class="post-card">
           <div class="post-body">
@@ -215,24 +233,6 @@
               <span class="created" data-l-en="cdt">2 Jan 2020</span>
             </div>
             <span class="reading-time" data-l-en="rdt">33 SEC READ</span>
-          </div>
-        </article>
-      </div>
-      <div class="col" data-l-en="irt">
-        <article class="post-card">
-          <div class="post-body">
-            <a class="thumbnail" href="./infra/kube/how-to-use-hmac-plugin-to-protect-kong-api.html" data-l-en="tna"><img src="./infra/kube/../../images/kong.png" data-l-en="tni" alt="kong"></a>
-            <a href="./infra/kube/how-to-use-hmac-plugin-to-protect-kong-api.html" data-l-en="bda">
-              <h3 class="title" data-l-en="ttl">How to use HMAC Plugin to protect Kong API</h3>
-              <p class="brief" data-l-en="csm">Kong has lots of plugins available to do varies kind of tasks, Security is a big topic among the plugins , no one wants ...</p>
-            </a>
-          </div>
-          <div class="post-footer">
-            <div class="meta">
-              <img src="./images/default-avatar.jpg" data-l-en="avt" title="Ivan" alt="default avatar">
-              <span class="created" data-l-en="cdt">30 Dec 2019</span>
-            </div>
-            <span class="reading-time" data-l-en="rdt">4 MIN READ</span>
           </div>
         </article>
       </div>

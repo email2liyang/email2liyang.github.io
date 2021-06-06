@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - How to enable EFS support in Fargate for EKS</title>
+  
+    
+  
+  <meta name="description" content="Fargate for EKS is great serverless service from AWS, but the nature of the serverless service is ephemeral, and there is no way to run daemon set on Fargate, so no way to run Datadog to collect metrics and log etc. when something goes wrong it will be great if we could still check the log even after the pod and ec2 no">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1622967210769' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1622967210769"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../infra.html">Infra</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../aws.html">Aws</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>How to enable EFS support in Fargate for EKS</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>How to enable EFS support in Fargate for EKS</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">6 Jun 2021 15:34:31</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>Fargate for EKS is great serverless service from AWS, but the nature of the serverless service is ephemeral, and there is no way to run daemon set on Fargate, so no way to run Datadog to collect metrics and log etc. when something goes wrong it will be great if we could still check the log even after the pod and ec2 node has gone. we could mount EFS to the pod running on fargate , if we could write log to EFS system then the information will be still available after pod get destroyed</p>
+<p><figure><img src="../../images/efs.png" alt="efs"></figure></p>
+<p>There are already blogs to talk about how to enalbe EFS on Fargate, like <a href="https://aws.amazon.com/blogs/aws/new-aws-fargate-for-amazon-eks-now-supports-amazon-efs/">https://aws.amazon.com/blogs/aws/new-aws-fargate-for-amazon-eks-now-supports-amazon-efs/</a>, but it's works for newly created eks cluster only, and assume CSI driver already been installed in the cluster, for my case I have an really old EKS cluster which is upgraded to newer version. so the CSI driver may not get installed, we have to install them manually, below is the steps I have to perform to make EFS work on my Fargate for EKS</p>
+<h2 id="create-iam-policy-for-csi-driver-1">create iam policy for CSI driver</h2>
+<ul>
+<li>save content below to <code>efs-csi-iam-policy.json </code></li>
+</ul>
+<pre><code>{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;elasticfilesystem:DescribeAccessPoints&quot;,
+        &quot;elasticfilesystem:DescribeFileSystems&quot;
+      ],
+      &quot;Resource&quot;: "*"
+    },
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;elasticfilesystem:CreateAccessPoint&quot;
+      ],
+      &quot;Resource&quot;: "*",
+      &quot;Condition&quot;: {
+        &quot;StringLike&quot;: {
+          &quot;aws:RequestTag/efs.csi.aws.com/cluster&quot;: &quot;true&quot;
+        }
+      }
+    },
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;elasticfilesystem:DeleteAccessPoint&quot;,
+      &quot;Resource&quot;: "*",
+      &quot;Condition&quot;: {
+        &quot;StringEquals&quot;: {
+          &quot;aws:ResourceTag/efs.csi.aws.com/cluster&quot;: &quot;true&quot;
+        }
+      }
+    }
+  ]
+}
+</code></pre>
+<ul>
+<li>create policy by</li>
+</ul>
+<pre><code>aws iam create-policy \
+    --policy-name AmazonEKS_EFS_CSI_Driver_Policy \
+    --policy-document file://efs-csi-iam-policy.json
+</code></pre>
+<h2 id="create-iam-role-for-the-csi-driver-2">create iam role for the CSI driver</h2>
+<ul>
+<li>get OIDC provider</li>
+</ul>
+<pre><code>aws eks describe-cluster --name acme-Development --query &quot;cluster.identity.oidc.issuer&quot; --output text
+</code></pre>
+<ul>
+<li>create role policy, by saving content below to efs-csi-iam-role.json</li>
+</ul>
+<pre><code>{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Principal&quot;: {
+        &quot;Federated&quot;: &quot;arn:aws:iam::xxxx:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/xxxx&quot;
+      },
+      &quot;Action&quot;: &quot;sts:AssumeRoleWithWebIdentity&quot;,
+      &quot;Condition&quot;: {
+        &quot;StringEquals&quot;: {
+          &quot;oidc.eks.us-east-1.amazonaws.com/id/xxxx:sub&quot;: &quot;system:serviceaccount:kube-system:efs-csi-controller-sa&quot;
+        }
+      }
+    }
+  ]
+}
+</code></pre>
+<ul>
+<li>create the iam role</li>
+</ul>
+<pre><code>aws iam create-role \
+  --role-name AmazonEKS_EFS_CSI_DriverRole \
+  --assume-role-policy-document file://efs-csi-iam-role.json
+</code></pre>
+<ul>
+<li>attach policy to role</li>
+</ul>
+<pre><code>attach-role-policy:
+    aws iam attach-role-policy \
+  --policy-arn arn:aws:iam::xxxxx:policy/AmazonEKS_EFS_CSI_Driver_Policy \
+  --role-name AmazonEKS_EFS_CSI_DriverRole
+</code></pre>
+<h2 id="install-csi-driver-3">install CSI driver</h2>
+<ul>
+<li>create service account</li>
+</ul>
+<pre><code>apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: efs-csi-controller-sa
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: aws-efs-csi-driver
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::xxxxx:role/AmazonEKS_EFS_CSI_DriverRole
+</code></pre>
+<ul>
+<li>get the driver.yaml as below</li>
+</ul>
+<pre><code>apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: aws-efs-csi-driver
+  name: efs-csi-external-provisioner-role
+rules:
+  - apiGroups:
+      - &quot;&quot;
+    resources:
+      - persistentvolumes
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete
+  - apiGroups:
+      - &quot;&quot;
+    resources:
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - storageclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - &quot;&quot;
+    resources:
+      - events
+    verbs:
+      - list
+      - watch
+      - create
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - csinodes
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - &quot;&quot;
+    resources:
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - watch
+      - list
+      - delete
+      - update
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: aws-efs-csi-driver
+  name: efs-csi-provisioner-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: efs-csi-external-provisioner-role
+subjects:
+  - kind: ServiceAccount
+    name: efs-csi-controller-sa
+    namespace: kube-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: aws-efs-csi-driver
+  name: efs-csi-controller
+  namespace: kube-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: efs-csi-controller
+      app.kubernetes.io/instance: kustomize
+      app.kubernetes.io/name: aws-efs-csi-driver
+  template:
+    metadata:
+      labels:
+        app: efs-csi-controller
+        app.kubernetes.io/instance: kustomize
+        app.kubernetes.io/name: aws-efs-csi-driver
+    spec:
+      containers:
+        - args:
+            - --endpoint=$(CSI_ENDPOINT)
+            - --logtostderr
+            - --v=2
+            - --delete-access-point-root-dir=false
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
+          image: 602401143452.dkr.ecr.us-east-1.amazonaws.com/eks/aws-efs-csi-driver:v1.2.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          name: efs-plugin
+          ports:
+            - containerPort: 9909
+              name: healthz
+              protocol: TCP
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/lib/csi/sockets/pluginproxy/
+              name: socket-dir
+        - args:
+            - --csi-address=$(ADDRESS)
+            - --v=2
+            - --feature-gates=Topology=true
+            - --leader-election
+          env:
+            - name: ADDRESS
+              value: /var/lib/csi/sockets/pluginproxy/csi.sock
+          image: public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner:v2.1.1-eks-1-18-2
+          name: csi-provisioner
+          volumeMounts:
+            - mountPath: /var/lib/csi/sockets/pluginproxy/
+              name: socket-dir
+        - args:
+            - --csi-address=/csi/csi.sock
+            - --health-port=9909
+          image: public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe:v2.2.0-eks-1-18-2
+          name: liveness-probe
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-cluster-critical
+      serviceAccountName: efs-csi-controller-sa
+      tolerations:
+        - operator: Exists
+      volumes:
+        - emptyDir: {}
+          name: socket-dir
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/name: aws-efs-csi-driver
+  name: efs-csi-node
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: efs-csi-node
+      app.kubernetes.io/instance: kustomize
+      app.kubernetes.io/name: aws-efs-csi-driver
+  template:
+    metadata:
+      labels:
+        app: efs-csi-node
+        app.kubernetes.io/instance: kustomize
+        app.kubernetes.io/name: aws-efs-csi-driver
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/compute-type
+                    operator: NotIn
+                    values:
+                      - fargate
+      containers:
+        - args:
+            - --endpoint=$(CSI_ENDPOINT)
+            - --logtostderr
+            - --v=2
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:/csi/csi.sock
+          image: 602401143452.dkr.ecr.us-east-1.amazonaws.com/eks/aws-efs-csi-driver:v1.2.1
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            periodSeconds: 2
+            timeoutSeconds: 3
+          name: efs-plugin
+          ports:
+            - containerPort: 9809
+              name: healthz
+              protocol: TCP
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/lib/kubelet
+              mountPropagation: Bidirectional
+              name: kubelet-dir
+            - mountPath: /csi
+              name: plugin-dir
+            - mountPath: /var/run/efs
+              name: efs-state-dir
+            - mountPath: /var/amazon/efs
+              name: efs-utils-config
+            - mountPath: /etc/amazon/efs-legacy
+              name: efs-utils-config-legacy
+        - args:
+            - --csi-address=$(ADDRESS)
+            - --kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)
+            - --v=2
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: DRIVER_REG_SOCK_PATH
+              value: /var/lib/kubelet/plugins/efs.csi.aws.com/csi.sock
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          image: public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar:v2.1.0-eks-1-18-2
+          name: csi-driver-registrar
+          volumeMounts:
+            - mountPath: /csi
+              name: plugin-dir
+            - mountPath: /registration
+              name: registration-dir
+        - args:
+            - --csi-address=/csi/csi.sock
+            - --health-port=9809
+            - --v=2
+          image: public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe:v2.2.0-eks-1-18-2
+          name: liveness-probe
+          volumeMounts:
+            - mountPath: /csi
+              name: plugin-dir
+      hostNetwork: true
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      priorityClassName: system-node-critical
+      tolerations:
+        - operator: Exists
+      volumes:
+        - hostPath:
+            path: /var/lib/kubelet
+            type: Directory
+          name: kubelet-dir
+        - hostPath:
+            path: /var/lib/kubelet/plugins/efs.csi.aws.com/
+            type: DirectoryOrCreate
+          name: plugin-dir
+        - hostPath:
+            path: /var/lib/kubelet/plugins_registry/
+            type: Directory
+          name: registration-dir
+        - hostPath:
+            path: /var/run/efs
+            type: DirectoryOrCreate
+          name: efs-state-dir
+        - hostPath:
+            path: /var/amazon/efs
+            type: DirectoryOrCreate
+          name: efs-utils-config
+        - hostPath:
+            path: /etc/amazon/efs
+            type: DirectoryOrCreate
+          name: efs-utils-config-legacy
+---
+apiVersion: storage.k8s.io/v1beta1
+kind: CSIDriver
+metadata:
+  annotations:
+    helm.sh/hook: pre-install, pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/resource-policy: keep
+  name: efs.csi.aws.com
+  namespace: kube-system
+spec:
+  attachRequired: false
+</code></pre>
+<h2 id="create-the-storageclass-4">create the storageclass</h2>
+<pre><code>kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: fs-xxxxx # this is the EFS system id could be found from aws console
+  directoryPerms: &quot;700&quot;
+  # gidRangeStart: &quot;1000&quot; # optional
+  # gidRangeEnd: &quot;2000&quot; # optional
+  # basePath: &quot;/dynamic_provisioning&quot; # optional
+
+</code></pre>
+<h2 id="create-pv-and-pvc-5">create pv and pvc</h2>
+<pre><code>apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: efs-pv-flow
+  namespace: flow
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-xxxx
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: efs-claim-flow
+  namespace: flow
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi
+</code></pre>
+<h1 id="create-the-pod-to-test-efs-6">create the pod to test EFS</h1>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: efs-app
+  namespace: flow
+  labels:
+    infrastructure: fargate
+spec:
+  containers:
+    - name: app
+      image: centos
+      command: [&quot;/bin/sh&quot;]
+      args: [&quot;-c&quot;, &quot;while true; do echo $(date -u) &gt;&gt; /data/out; sleep 5; done&quot;]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: efs-claim-flow
+</code></pre>
+<p>I've created an fargate profile to match label <code>infrastructure: fargate</code> on namespace <code>flow</code> to schedule pod on faragte</p>
+<p>after the pod get created, we could login to the pod to check the file system, the data folder has mounted efs, so we could access efs from pod now!</p>
+<pre><code>kubectl exec -it efs-app -n flow -- bash
+[root@efs-app /]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G   10G   18G  36% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs           2.0G     0  2.0G   0% /sys/fs/cgroup
+127.0.0.1:/     8.0E  402G  8.0E   1% /data
+overlay          30G   10G   18G  36% /etc/hosts
+/dev/xvdcz       30G   10G   18G  36% /etc/hostname
+shm              64M     0   64M   0% /dev/shm
+tmpfs           2.0G   12K  2.0G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           2.0G     0  2.0G   0% /proc/acpi
+tmpfs           2.0G     0  2.0G   0% /proc/scsi
+tmpfs           2.0G     0  2.0G   0% /sys/firmware
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>
