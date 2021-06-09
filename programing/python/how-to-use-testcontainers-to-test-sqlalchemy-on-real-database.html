@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - Write unit test for grpc with pytest and pytest-grpc</title>
+  <title>Mind - How to use testcontainers to test sqlalchemy on real database</title>
   
     
   
-  <meta name="description" content="I've described how to bootstrap a simple grpc server in python,now it's time to test the grpc service. I'm using pytest-grpc to write unit test for grpc service. pytest-grpc is a pytest plugin, it's leverage the power of pytest fixtures to make unit test for grpc service very easy. to write unit test for grpc, there ar">
+  <meta name="description" content="in previous article, I described how to use sqlalchemy and how to do unit test with python build in db sqlite, sometimes with legacy code, we have to execute raw sql with sqlalchemy engine and some of the raw sql is using database specific functions, to test these logic, we could not spin up sqlite , we have to launch">
   
   
   
@@ -99,7 +99,7 @@
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>Write unit test for grpc with pytest and pytest-grpc</span>
+        <span>How to use testcontainers to test sqlalchemy on real database</span>
       </div>
 
     </div>
@@ -113,59 +113,68 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>Write unit test for grpc with pytest and pytest-grpc</h1>
+    <h1>How to use testcontainers to test sqlalchemy on real database</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">20 Oct 2019 20:12:25</span>
+      <span class="updated">9 Jun 2021 20:43:13</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>I've described <a href="https://www.vipmind.me/programing/python/setup-grpc-server-project-in-python.html">how to bootstrap a simple grpc server in python</a>,now it's time to test the grpc service.</p>
-<p><figure><img src="../../images/pytest-grpc.png" alt="pytest-grpc"></figure></p>
-<p>I'm using <a href="https://pypi.org/project/pytest-grpc/">pytest-grpc</a> to write unit test for grpc service. <a href="https://pypi.org/project/pytest-grpc/">pytest-grpc</a> is a <a href="https://docs.pytest.org/en/latest/">pytest</a> plugin, it's leverage the power of <a href="https://docs.pytest.org/en/latest/fixture.html">pytest fixtures </a> to make unit test for grpc service very easy. to write unit test for grpc, there are 3 specific <a href="https://docs.pytest.org/en/latest/fixture.html">pytest fixtures </a> to implement, it's recommended to import artifacts within the fixture method to avoid package confilict</p>
-<ul>
-<li>grpc_add_to_server<br />
-the test need to know how to add grpc servicer into grpc server, this fixutre will return the generated funciton to add grpc servicer to grpc server</li>
-</ul>
-<pre><code>@pytest.fixture(scope='module')
-def grpc_add_to_server():
-    from grpc_mate.helloworld_pb2_grpc import add_GreeterServicer_to_server
+      <p>in previous <a href="https://www.vipmind.me/programing/python/sqlalchemy-makes-python-orm-easy.html">article</a>, I described how to use <a href="https://www.sqlalchemy.org/">sqlalchemy</a> and how to do unit test with python build in db <code>sqlite</code>, sometimes with legacy code, we have to execute raw sql with sqlalchemy engine and some of the raw sql is using database specific functions, to test these logic, we could not spin up <code>sqlite</code> ,  we have to launch real database. with <a href="https://github.com/testcontainers/testcontainers-python">testcontainers-python</a>, things get really easy.</p>
+<p><figure><img src="../../images/sqlalchemy.png" alt="sqlalchemy"></figure></p>
+<p>below is the code example from testcontainers-python's webiste to demo how to use it</p>
+<pre><code>import sqlalchemy
+from testcontainers.mysql import MySqlContainer
 
-    return add_GreeterServicer_to_server
+with MySqlContainer('mysql:5.7.17') as mysql:
+    engine = sqlalchemy.create_engine(mysql.get_connection_url())
+    version, = engine.execute(&quot;select version()&quot;).fetchone()
+    print(version)  # 5.7.17
 </code></pre>
-<ul>
-<li>grpc_servicer<br />
-the test need to know what servicer instance need to add to grpc server, this fixture methjod should return a servicer instnace</li>
-</ul>
-<pre><code>@pytest.fixture(scope='module')
-def grpc_servicer():
-    from service.greeter_servicer import GreeterServicer
+<p>in my case, I'm creating engine based on the <code>DB_URL</code> system env, so my first attempt is like below</p>
+<pre><code>@pytest.fixture(scope=&quot;function&quot;, autouse=True)
+def init_db():
+    from testcontainers.mysql import MySqlContainer
 
-    return GreeterServicer()
+    with MySqlContainer(&quot;mysql:5.7.24&quot;) as mysql:
+        os.environ[&quot;DB_URL&quot;] = mysql.get_connection_url()
+        Base.metadata.create_all(engine_pair)
+        yield
+        os.environ[&quot;DB_URL&quot;] = &quot;sqlite:///:memory:pair&quot;
 </code></pre>
-<ul>
-<li>grpc_stub_cls<br />
-the test need to know which client stub class to use to init the grpc stub instance</li>
-</ul>
-<pre><code>@pytest.fixture(scope='module')
-def grpc_stub_cls(grpc_channel):
-    from grpc_mate.helloworld_pb2_grpc import GreeterStub
+<p>when try the unit test, it failed, and reported it's still using sqlite db rather than mysql. then I figure out my sqlalchemy engine is created in the <code>__init__.py</code> statically, if I want to override it, I must reload the module after system env changed, <a href="https://docs.python.org/3/library/importlib.html">importlib</a> could help in this context. I need to define the system env  <code>DB_URL</code> first, then reload the module to re-create my sqlalchemy engine, after test complete, I could reset system env  <code>DB_URL</code> and reload the module again to clean up</p>
+<pre><code>@pytest.fixture(scope=&quot;function&quot;, autouse=True)
+def init_db():
+    from testcontainers.mysql import MySqlContainer
 
-    return GreeterStub
-</code></pre>
-<p>after we provide these information, <a href="https://pypi.org/project/pytest-grpc/">pytest-grpc</a> will do the rest for us, it will take care of the grpc server/ channel's creation and termination, it will help us to construct the client stub, what we need to do is just focus on write meaningful unit test to test out grpc logic, like below</p>
-<pre><code>def test_SayHello(grpc_stub):
-    hello_request = HelloRequest(name='ivan')
-    response = grpc_stub.SayHello(hello_request)
+    with MySqlContainer(&quot;mysql:5.7.24&quot;) as mysql:
+        import os
+        import importlib
+        import db
+        from db import database
+        from db.models import acme_record
+        os.environ[&quot;DB_URL&quot;] = mysql.get_connection_url()
+        importlib.reload(db)
+        importlib.reload(database)
+        importlib.reload(acme_record)
+        from db import engine
+        from db.models import Base
+        Base.metadata.create_all(engine)
+        yield
+    # set env back
+    import os
+    import importlib
+    import db
+    from db import database
 
-    assert response.message == f'hello {hello_request.name}'
+    os.environ[&quot;DB_URL&quot;] = &quot;sqlite:///:memory&quot;
+    importlib.reload(db)
+    importlib.reload(database)
 </code></pre>
-<p>see the full example from <a href="https://github.com/email2liyang/grpc-mate/blob/master/grpc-mate-python/tests/service/test_greeter_servicer.py">test_greeter_servicer.py</a></p>
-<p><a href="https://grpc.github.io/grpc/python/index.html">grpc-python</a> do have it's own module to <a href="https://grpc.github.io/grpc/python/grpc_testing.html">test grpc server</a>, but I find the api is very confusing and the test code is not easy to maintain, so it's not recommended to use grpc-python's offical test module.</p>
     </div>
   </div>
 </div>

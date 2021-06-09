@@ -32,7 +32,7 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
-  <link href='../../styles/main.min.css?v=1622967210769' rel='stylesheet' type='text/css'>
+  <link href='../../styles/main.min.css?v=1623243586998' rel='stylesheet' type='text/css'>
   
   <style></style>
 
@@ -46,7 +46,7 @@
 <body>
 
 
-<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1622967210769"></script>
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1623243586998"></script>
 <iframe src="javascript:''" id="__gwt_historyFrame"
         style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
 <!--[if lt IE 8]>
@@ -180,11 +180,14 @@ class DBProduct(Base):
     product_status = Column(SMALLINT)
     category = Column(String(50))
 </code></pre>
-<p>to create the db for unit test, we could have pytest fixture to create a new table before each test is running and we also have a safe guard to make sure this only execute in unit test for sqlite db</p>
+<p>to create the db for unit test, we could have pytest fixture to create a new table before each test is running and we also have a safe guard to make sure this only execute in unit test for sqlite db<br />
+the <code>yield</code> keyword will make sure the init_db function pause on <code>yield</code> and let the unit test run, after unit test complete, it will drop all the database, so that we have a clean state</p>
 <pre><code>@pytest.fixture(autouse=True, scope='function')
-def create_schema():
+def init_db():
     if engine.url.__str__() == 'sqlite:///:memory:':
         Base.metadata.create_all(engine)
+        yield
+        Base.metadata.drop_all(engine_pair)
 </code></pre>
 <h2 id="queries-4">Queries</h2>
 <p>compare with JPA's JPQL, sqlalchemy's query ability is a little limit, Query is the main entrance, we could create Query object by <code>session.query(Entities)</code>, then it has a chain style of call stack to filter more field, when we need to do complex queries, the sqlalchemy query will be very complex and not as clean as JPQL, I think I will switch to use sqlalchemy core to use raw sql if I need complex sql query, I may change my mind when I discover more.</p>
