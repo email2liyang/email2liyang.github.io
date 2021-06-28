@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - Time and Window in Flink Stream Application</title>
+  <title>Mind - encryption and decryption in python</title>
   
     
   
-  <meta name="description" content="Tyler Akidau published Streaming 101: The world beyond batch up on Oreilly in 2015, this is the fundamental theory of Google Cloud DataFlow, nowadays, the API of Google Cloud DataFlow has become Apache Beam, Apache Flink has the same concept of how Apache Beam and Google Cloud DataFlow processing streaming applications">
+  <meta name="description" content="Recently I need to design a way to store and transfer sensitive data in a secure way, as the data is sensitive, no one could see the data except the owner, our system is only granted to get the plain text at run time, when storing or transferring the data, it must remains encrypted and the password for encryption shoul">
   
   
   
@@ -91,15 +91,15 @@
       </div>
 
       <div class="breadcrumb-item">
-        <a href="../../data.html">Data</a>
+        <a href="../../programing.html">Programing</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <a href="../flink.html">Flink</a>
+        <a href="../python.html">Python</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>Time and Window in Flink Stream Application</span>
+        <span>encryption and decryption in python</span>
       </div>
 
     </div>
@@ -113,42 +113,75 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>Time and Window in Flink Stream Application</h1>
+    <h1>encryption and decryption in python</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">5 Dec 2019 21:02:17</span>
+      <span class="updated">28 Jun 2021 20:03:52</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>Tyler Akidau published <a href="https://www.oreilly.com/ideas/the-world-beyond-batch-streaming-101">Streaming 101: The world beyond batch</a> up on Oreilly in 2015, this is the fundamental theory of <a href="https://cloud.google.com/dataflow/">Google Cloud DataFlow</a>, nowadays, the API of <a href="https://cloud.google.com/dataflow/">Google Cloud DataFlow</a> has become <a href="https://beam.apache.org/">Apache Beam</a>, Apache Flink has the same concept of how <a href="https://beam.apache.org/">Apache Beam</a> and <a href="https://cloud.google.com/dataflow/">Google Cloud DataFlow</a> processing streaming applications. I'm going to talk about how to use 2 critical concepts <code>Time</code> and <code>Window</code> in Flink here. for detail theory, please refer <a href="https://www.oreilly.com/ideas/the-world-beyond-batch-streaming-101">Streaming 101: The world beyond batch</a> for details.</p>
-<p><figure><img src="../../images/flink.png" alt="flink"></figure></p>
-<h2 id="event-time-vs-processing-time-1">Event Time VS Processing Time</h2>
-<ul>
-<li>Event time: which is the time at which events actually occurred.</li>
-<li>Processing time: which is the time at which events are observed in the system.</li>
-</ul>
-<p>Some Application may not care about the difference between event time and processing time, this type of application is easier to handle. but a lot of applicants need to handle this, think about an application that handle a game player's rank in real time, on player is playing the game , he will generate a serious of event and push to the data procesing system, in a perfect world, the event will be pushed into the data processing system seamlessly, then the Event Time and Processing time has the same trend, but in real world , it could be differnet, think about the player is playing the game on a train, the train is passing a tunnel, there is no 4G signal in the tunnel, so the event will be buffered in the player's device , after the train pass the tunnel, the device will send out all the buffered event to the data processing system, in this case the event will be process late. when we calculate result based on the event time, this player's score will be wrong when he is in the tunnel.</p>
-<p>Flink support both Event Time Stream and Processing Time Stream, we could set the application's characteristic, like below</p>
-<pre><code>val env = StreamExecutionEnvironment.getExecutionEnvironment
-env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
-//or
-env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
+      <p>Recently I need to design a way to store and transfer sensitive data in a secure way, as the data is sensitive, no one could see the data except the owner, our system is only granted to get the plain text at run time, when storing or transferring the data, it must remains encrypted and the password for encryption should be encrypted as well, we also requested not use any hard coded password to do encryption and decryption</p>
+<p><figure><img src="../../images/Encryption-Decryption.png" alt="Encryption-Decryption"></figure></p>
+<p>there are 2 types of encryption mechanisms <code>Symmetric encryption</code> and <code>Asymmetric encryption</code>, Symmetric encryption uses a private key to encrypt and decrypt, Asymmetric encryption uses the public key of the recipient to encrypt the message. Then if the recipient wants to decrypt the message the recipient will have to use his/her private key to decrypt, we could tell, Asymmetric encryption is safer than Symmetric encryption, but it's not as efficient as Symmetric encryption and only suitable for small amount of data (e.g: key or password) encryption. https protocol is using the same way , it's using Asymmetric encryption to exchange the password, then use Symmetric encryption to exchange the actual content. I would like to do the same.</p>
+<p>for Asymmetric encryption, we use <a href="https://simple.wikipedia.org/wiki/RSA_algorithm">RSA</a> algorithm, for Symmetric encryption, we use <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES-256</a> algorithm.  end user could provide us a pubkey and we could use the pubkey to encrypt any AES password and iv, for the actual content , for actual content, we could use AES-256 algorithm to encrypt the actual content and deliver &quot;rsa_encrypted_aes_password , rsa_encrypted_aes_iv , aes_encrypted_data&quot; to end user, when end user get the data, they could use their private key to decrypt <code>rsa_encrypted_aes_password</code> and <code>rsa_encrypted_aes_iv</code>, then use them to decrypt <code>aes_encrypted_data</code>.</p>
+<p><a href="https://pypi.org/project/pycryptodome/">pycryptodome</a> provide out of box support for both RSA and AES algorithm</p>
+<p>for RSA encryption and decryption, we could use code like below</p>
+<pre><code>    from Crypto.Cipher import PKCS1_OAEP
+    from Crypto.PublicKey import RSA
+    
+    def rsa_encrypt(original_data: bytes) -&gt; bytes:
+        &quot;&quot;&quot;
+        use cust_key to encrypt the data
+        :return: base64 encoded encrypted str
+        &quot;&quot;&quot;
+        rsa_public_key = RSA.import_key(get_pubkey())
+        cipher_rsa = PKCS1_OAEP.new(rsa_public_key)
+        return cipher_rsa.encrypt(original_data)
+
+    def rsa_decrypt(encrypted_content: bytes, private_key: bytes) -&gt; bytes:
+        rsa_private_key = RSA.import_key(private_key)
+        cipher_rsa = PKCS1_OAEP.new(rsa_private_key)
+        return cipher_rsa.decrypt(encrypted_content)
 </code></pre>
-<h2 id="window-2">Window</h2>
-<p>A stream application is an endless data stream, if you want to do any statistics or aggregation, you will have to do the calculation based on a boundary, e.g: what's the average score every 5 mins or what's the max score every 5 mins, Window is designed to support such feature, Flink support both key based window and none-key based window, the key based window will be evaluated in parallel , none-key based window will be evaluate in a single thread. for key based window, Flink support 3 types of windows for both Event Time and Processing Time.</p>
-<h3 id="tumblingwindows-3">TumblingWindows</h3>
-<p>The event will be placed into a timed window side by side, we could define the window interval and the framework will assign the event into the right window, there is no overlap between windows, every event will be assing to one window for processing, example below assign event to window every 1 minute and it will trigger the processing function when all the event time or processing time has passed the window</p>
-<pre><code>stream.keyBy(_.year)
-      .timeWindow(Time.minutes(1))
+<p>for AES encryption and decryption, we could use code like below</p>
+<pre><code>    from Crypto.Cipher import AES
+    from Crypto.Util.Padding import pad, unpad
+    def aes_encrypt(
+        original_data: bytes,
+        aes_secret: Optional[bytes] = None,
+        aes_iv: Optional[bytes] = None,
+    ) -&gt; Tuple[bytes, bytes, bytes]:
+        &quot;&quot;&quot;
+        use aes encrypt to encrypt the data
+        :param original_data:
+        :return: turple of (encrypted data in bytes, rsa encrypted aes_secret, rsa encrypted aes_iv
+        &quot;&quot;&quot;
+        # use aes-256-cbc 32*8=256 bit
+        if not aes_secret:
+            aes_secret = os.urandom(32)
+        if not aes_iv:
+            aes_iv = os.urandom(16)
+        cipher = AES.new(aes_secret, AES.MODE_CBC, iv=aes_iv)
+        # use default pkcs7 padding
+        return (
+            cipher.encrypt(pad(original_data, AES.block_size)),
+            rsa_encrypt(aes_secret),
+            rsa_encrypt(aes_iv),
+        )
+
+    def aes_decrypt(
+        encrypted_content: bytes, aes_secret: bytes, aes_iv: bytes
+    ) -&gt; bytes:
+        cipher = AES.new(aes_secret, AES.MODE_CBC, iv=aes_iv)
+        return unpad(cipher.decrypt(encrypted_content), AES.block_size)    
 </code></pre>
-<h3 id="slidingwindows-4">SlidingWindows</h3>
-<p>a sliding window will define a window size and an interval <code>SlidingEventTimeWindows.of(Time.hours(1),Time.minutes(15))</code> will define a 1hour time window every event within this hour will be placed into sliding window 4 times as time passed</p>
-<h3 id="sessionwindows-5">SessionWindows</h3>
-<p>an event in a session window will be placed into a window, the session window will define a gap time, the window will be triggered when no event arrived exceed the defined gap. <code>EventTimeSessionWindows.withGap(Time.minutes(1))</code> will trigger the session window if no more event with given key more than 1 minute</p>
+<p>wait a second, there is 1 misleading point, we got user's pubkey and we need to store it somewhere in a secure way, store pubkey in a clear text may not be a good idea, so we decide to use KMS to encrypt the pubkey and put it into s3, with this we do not have any hard coded password and everything we store/transfer is encrypted by default<br />
+for KMS encryption and decryption we could use <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kms.html#KMS.Client.encrypt">boto3 kms client</a></p>
+<p>to test kms, we could use <a href="https://github.com/spulec/moto">moto</a> , sample kms test could be found <a href="https://github.com/spulec/moto/blob/master/tests/test_kms/test_kms_boto3.py">https://github.com/spulec/moto/blob/master/tests/test_kms/test_kms_boto3.py</a></p>
     </div>
   </div>
 </div>
