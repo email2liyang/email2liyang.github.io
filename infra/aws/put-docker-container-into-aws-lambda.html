@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Put Docker Container into AWS Lambda</title>
+  
+    
+  
+  <meta name="description" content="AWS Lambda provide serverless runtime, lots of developers love this service. we could use many languages on aws lambda, e.g: nodejs, python, java etc. but what if we have some customised c library, or custom utility package to install into the runtime env ? now AWS lambda support deploy docker image to lambda env The d">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1630562753762' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1630562753762"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../infra.html">Infra</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../aws.html">Aws</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>Put Docker Container into AWS Lambda</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Put Docker Container into AWS Lambda</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">1 Sep 2021 20:34:47</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>AWS Lambda provide serverless runtime, lots of developers love this service. we could use many languages on aws lambda, e.g: nodejs, python, java etc. but what if we have some customised c library, or custom utility package to install into the runtime env ? now AWS lambda support deploy docker image to lambda env</p>
+<p><figure><img src="../../images/docker_and_lambda.png" alt="docker_and_lambda"></figure></p>
+<p>The docker image must implement <a href="https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html">Runtime API</a>, AWS already provided base images for lots of programming languages to extend , so we only need to develop logic and starting from the based image to customise the docker image. take python image as an example, reference from <a href="https://docs.aws.amazon.com/lambda/latest/dg/images-create.html">https://docs.aws.amazon.com/lambda/latest/dg/images-create.html</a></p>
+<pre><code>FROM public.ecr.aws/lambda/python:3.8
+
+# Copy function code
+COPY app.py ${LAMBDA_TASK_ROOT}
+
+# Install the function's dependencies using file requirements.txt
+# from your project folder.
+
+COPY requirements.txt  .
+RUN  pip3 install -r requirements.txt --target &quot;${LAMBDA_TASK_ROOT}&quot;
+
+# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+CMD [ &quot;app.handler&quot; ] 
+</code></pre>
+<p>we could use <a href="https://aws.amazon.com/serverless/sam/">AWS Serverless Application Model</a> to manage the build and deployment. a sample config file could like below</p>
+<pre><code>AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: &gt;
+  python3.8
+
+  SAM Template for xxx
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 600
+
+Resources:
+  SampleFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          LOG_LEVEL: INFO
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: .
+      DockerTag: v1
+
+Outputs:
+  SampleFunction:
+    Description: &quot;xxx Lambda Function ARN&quot;
+    Value: !GetAtt SampleFunction.Arn
+</code></pre>
+<p>we could use command <code>sam build</code> to build the docker image and use command <code>sam local invoke SearchablePdfFunction --event events/sample_request.json</code> to trigger the lambda locally</p>
+<p>we could see log like below</p>
+<pre><code>REPORT RequestId: e207ea8b-fe68-4249-bfef-181f4f0b3098  Init Duration: 1.07 ms  Duration: 125.20 ms     Billed Duration: 200 ms Memory Size: 128 MB     Max Memory Used: 128 MB 
+&quot;Hello from AWS Lambda using Python3.8.11 (default, Jul 14 2021, 13:00:16) \n[GCC 7.3.1 20180712 (Red Hat 7.3.1-13)]!&quot;%  
+</code></pre>
+<p>sometimes we may want to use our own images and customise the image, we could also install the lambda runtime client manually to make it work, for example, I want to use <a href="https://ocrmypdf.readthedocs.io/en/latest/">OCRMyPDF</a> docker image to process pdf files, we could do the following</p>
+<pre><code># Define global args
+ARG FUNCTION_DIR=&quot;/home/app/&quot;
+ARG RUNTIME_VERSION=&quot;3.9&quot;
+
+# Stage 1 - bundle base image + runtime
+# Grab a fresh copy of the image and install GCC
+FROM jbarlow83/ocrmypdf AS Image-Base
+# Install GCC (Alpine uses musl but we compile and link dependencies with GCC)
+RUN apt-get update &amp;&amp; apt-get install -y python3-distutils python3-dev default-libmysqlclient-dev build-essential
+# Install aws-lambda-cpp build dependencies
+RUN apt-get install -y \
+  g++ \
+  make \
+  cmake \
+  unzip \
+  libcurl4-openssl-dev
+# (Optional) Add Lambda Runtime Interface Emulator and use a script in the ENTRYPOINT for simpler local runs
+ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
+RUN chmod 755 /usr/bin/aws-lambda-rie
+
+# Stage 2 - build function and dependencies
+FROM Image-Base AS build-image
+#Include global args in this stage of the build
+ARG FUNCTION_DIR
+ARG RUNTIME_VERSION
+# Create function directory
+RUN mkdir -p ${FUNCTION_DIR}
+# Copy handler function
+COPY *.py requirements.txt ${FUNCTION_DIR}
+
+# Optional – Install the function's dependencies
+# RUN python${RUNTIME_VERSION} -m pip install -r requirements.txt --target ${FUNCTION_DIR}
+# Install Lambda Runtime Interface Client for Python
+RUN python${RUNTIME_VERSION} -m pip install awslambdaric --target ${FUNCTION_DIR}
+# Optional – Install the function's dependencies
+RUN python${RUNTIME_VERSION} -m pip install -r ${FUNCTION_DIR}requirements.txt --target ${FUNCTION_DIR}
+
+# Stage 3 - final runtime image
+# Grab a fresh copy of the Python image
+FROM Image-Base
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+# Set working directory to function root directory
+WORKDIR ${FUNCTION_DIR}
+# Copy in the built dependencies
+COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
+COPY entry.sh /
+RUN chmod 755 /entry.sh
+ENTRYPOINT [ &quot;/entry.sh&quot; ]
+CMD [ &quot;app.handler&quot; ]
+</code></pre>
+<p>the entry.sh is used to switch between local dev env and lambda env</p>
+<pre><code>#!/bin/sh
+if [ -z &quot;${AWS_LAMBDA_RUNTIME_API}&quot; ]; then
+    exec /usr/bin/aws-lambda-rie /usr/bin/python3 -m awslambdaric $1
+else
+    exec /usr/bin/python3 -m awslambdaric $1
+fi
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>
