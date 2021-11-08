@@ -32,7 +32,7 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
-  <link href='../../styles/main.min.css?v=1636365758832' rel='stylesheet' type='text/css'>
+  <link href='../../styles/main.min.css?v=1636365875329' rel='stylesheet' type='text/css'>
   
   <style></style>
 
@@ -46,7 +46,7 @@
 <body>
 
 
-<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1636365758832"></script>
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1636365875329"></script>
 <iframe src="javascript:''" id="__gwt_historyFrame"
         style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
 <!--[if lt IE 8]>
@@ -124,8 +124,8 @@
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>EKS Cluster is a fleet of ec2 instances which provide the underlying compute power, when we schedule a pod, the first thing it need to do is to pull docker image and save it into ec2 host's root disk. we could not predict how many pods and what kind of pods is going to schedule on the ec2 node , so it's essential to provision enough root diskspace for each  ec2 host<br />
-<figure><img src="../../images/eks.png" alt="eks"></figure></p>
+      <p>EKS Cluster is a fleet of ec2 instances which provide the underlying compute power, when we schedule a pod, the first thing it need to do is to pull docker image and save it into ec2 host's root disk. we could not predict how many pods and what kind of pods is going to schedule on the ec2 node , so it's essential to provision enough root diskspace for each  ec2 host</p>
+<p><figure><img src="../../images/eks.png" alt="eks"></figure></p>
 <p>we learn this lesson hard by painful issues, our eks production is mainly for data processing and we suddenly having a lot of pod eviction issues, if we describe the pod, k8s will report disk pressure and start to evict pod on the ec2 host. initially we think it maybe caused by we output too many logs or download too many intermediate file without clean up, but in the end it's not that case. it's caused by our docker image is too large and ec2 root disk is too small, after we expend the ec2 root disk from 20G to 200G, the eviction issue gone away totally.</p>
 <p>I explain this to the team like below, imagine you have a 2 bed rooms house, but there are 10 people try to sleep in, you have to kick off extra people to make sure your room could only host certain number of people , this is how the eviction issue happen, if you want to host all the 10 people , you have to expend your house to build more bed rooms, so that all 10 people could sleep in your house.</p>
     </div>
