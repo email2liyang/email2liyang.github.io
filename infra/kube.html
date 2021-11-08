@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Mind - kube</title>
   
-    <meta name="description" content="Kube - How to use HMAC Plugin to protect Kong API - Kong has lots of plugins available to do varies kind of tasks, S Airflow is not a data processing engine - In previous articles, I've introduced how to deploy airflow into KongIngress in Kong - It has been about a year since I last configed Kong Ingress Cont Deploy Ku">
+    <meta name="description" content="Kube - make sure to have enough root disk space for ec2 instnace inside EKS cluster - EKS Cluster is a fleet of ec2 instances which provide the underl How to use HMAC Plugin to protect Kong API - Kong has lots of plugins available to do varies kind of tasks, S Airflow is not a data processing engine - In previous artic">
   
   
   
@@ -30,7 +30,7 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
-  <link href='../styles/main.min.css?v=1630562753762' rel='stylesheet' type='text/css'>
+  <link href='../styles/main.min.css?v=1636365758832' rel='stylesheet' type='text/css'>
   
   <style></style>
 
@@ -44,7 +44,7 @@
 <body>
 
 
-<script async type="text/javascript" language="javascript" src="../plugins/plugins.nocache.js?v=1630562753762"></script>
+<script async type="text/javascript" language="javascript" src="../plugins/plugins.nocache.js?v=1636365758832"></script>
 <iframe src="javascript:''" id="__gwt_historyFrame"
         style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
 <!--[if lt IE 8]>
@@ -106,10 +106,27 @@
       <img id="back-to-top" src="../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
     </div>
   </div>
-</div><div class="l-cards b22" data-l-t="d" data-l-cp="1" data-l-mp="1">
+</div><div class="l-cards b22" data-l-t="d" data-l-cp="1" data-l-mp="2">
   <div class="l-cards__content max-width-md cards-view">
     <h1>Kube</h1>
     <div class="grid-3_sm-2_xs-1-equalHeight post-list" data-l-en="ilc" data-orrc="..">
+      <div class="col" data-l-en="irt">
+        <article class="post-card">
+          <div class="post-body">
+            <a href="../infra/kube/make-sure-to-have-enough-root-disk-space-for-ec2-instnace-inside-eks-cluster.html" data-l-en="bda">
+              <h3 class="title" data-l-en="ttl">make sure to have enough root disk space for ec2 instnace inside EKS cluster</h3>
+              <p class="brief" data-l-en="csm">EKS Cluster is a fleet of ec2 instances which provide the underlying compute power, when we schedule a pod, the first thing it need to do is to pull docker image and save it into ec2 host's root disk. we could not predict how many pods and what kind of pods is going to schedule on the ec2 node , so it's essential to provision enough root diskspace for each e...</p>
+            </a>
+          </div>
+          <div class="post-footer">
+            <div class="meta">
+              <img src="../images/default-avatar.jpg" data-l-en="avt" title="Ivan" alt="default avatar">
+              <span class="created" data-l-en="cdt">8 Nov 2021</span>
+            </div>
+            <span class="reading-time" data-l-en="rdt">1 MIN READ</span>
+          </div>
+        </article>
+      </div>
       <div class="col" data-l-en="irt">
         <article class="post-card">
           <div class="post-body">
@@ -243,24 +260,6 @@
             <a href="../infra/kube/managing-eks-permissions-with-kubernetes-rbac-and-aws-iam.html" data-l-en="bda">
               <h3 class="title" data-l-en="ttl">Managing EKS permissions with Kubernetes RBAC and AWS IAM</h3>
               <p class="brief" data-l-en="csm">AWS EKS has document on how to connect IAM and EKS , but the documentation is too generic, what should I do if I want to...</p>
-            </a>
-          </div>
-          <div class="post-footer">
-            <div class="meta">
-              <img src="../images/default-avatar.jpg" data-l-en="avt" title="Ivan" alt="default avatar">
-              <span class="created" data-l-en="cdt">13 Sep 2019</span>
-            </div>
-            <span class="reading-time" data-l-en="rdt">3 MIN READ</span>
-          </div>
-        </article>
-      </div>
-      <div class="col" data-l-en="irt">
-        <article class="post-card">
-          <div class="post-body">
-            <a class="thumbnail" href="../infra/kube/expose-webapplicant-with-aws-alb-ingress-controller-and-aws-certifacate-manager-over-https.html" data-l-en="tna"><img src="../infra/kube/../../images/aws-alb-ingress-controller.png" data-l-en="tni" alt="aws alb ingress controller"></a>
-            <a href="../infra/kube/expose-webapplicant-with-aws-alb-ingress-controller-and-aws-certifacate-manager-over-https.html" data-l-en="bda">
-              <h3 class="title" data-l-en="ttl">Expose WebApplicant with AWS ALB Ingress Controller and AWS Certifacate Manager Over HTTPS</h3>
-              <p class="brief" data-l-en="csm">Kubernetes has lots of Ingress Controller implementations,I've been using ingress-nginx for a long time, this ingress co...</p>
             </a>
           </div>
           <div class="post-footer">

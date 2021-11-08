@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - Grpc makes api update easier</title>
+  <title>Mind - make sure to have enough root disk space for ec2 instnace inside EKS cluster</title>
   
     
   
-  <meta name="description" content="I'm working on an API update today, I will need to add more fields in both the request parameter and api response. thanks to GRPC's elegant design , I could update the API fields and apply to production without worrying about any backward compatibility. GRPC's message is based on protocol-buffers, a language-neutral, p">
+  <meta name="description" content="EKS Cluster is a fleet of ec2 instances which provide the underlying compute power, when we schedule a pod, the first thing it need to do is to pull docker image and save it into ec2 host's root disk. we could not predict how many pods and what kind of pods is going to schedule on the ec2 node , so it's essential to pr">
   
   
   
@@ -91,15 +91,15 @@
       </div>
 
       <div class="breadcrumb-item">
-        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infra</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <a href="../java.html">Java</a>
+        <a href="../kube.html">Kube</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>Grpc makes api update easier</span>
+        <span>make sure to have enough root disk space for ec2 instnace inside EKS cluster</span>
       </div>
 
     </div>
@@ -113,48 +113,21 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>Grpc makes api update easier</h1>
+    <h1>make sure to have enough root disk space for ec2 instnace inside EKS cluster</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">18 Oct 2019 18:59:46</span>
+      <span class="updated">8 Nov 2021 16:57:33</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>I'm working on an API update today, I will need to add more fields in both the request parameter and api response. thanks to <a href="https://grpc.io/">GRPC</a>'s elegant design , I could update the API fields and apply to production without worrying  about any backward compatibility.</p>
-<p><figure><img src="../../images/grpc.png" alt="grpc"></figure></p>
-<p><a href="https://grpc.io/">GRPC</a>'s message is based on <a href="https://developers.google.com/protocol-buffers">protocol-buffers</a>, a language-neutral, platform-neutral, extensible mechanism for serializing structured data. all the GRPC APIs  are designed in <a href="https://developers.google.com/protocol-buffers">protocol-buffers</a>, a hello world type of grpc api definition could be found in one of my project <a href="https://github.com/email2liyang/grpc-mate">grpc-mate</a>'s protobuffer package <a href="https://github.com/email2liyang/grpc-mate/blob/master/protobuffers/grpc_mate/helloworld.proto">helloworld.proto</a></p>
-<pre><code>syntax = &quot;proto3&quot;;
-option java_package = &quot;io.datanerd.generated.helloworld&quot;;
-option java_multiple_files = true;
-
-// The greeting service definition.
-service Greeter {
-    // Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
-}
-
-// The request message containing the user's name.
-message HelloRequest {
-    string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-    string message = 1;
-}
-</code></pre>
-<p>the request and response are just one protobuf message. with this design, I could add more fields in the request and response, but the API still remains the same. for example, I want to add a new field in HelloReply to indicate response date, I could do the following</p>
-<pre><code>// The response message containing the greetings
-message HelloReply {
-    string message = 1;
-    string today = 2;
-}
-</code></pre>
-<p>the GRPC client and the server normally does not deploy together, we could update server first to include today field, when client have not update the protobuf file, even server response <code>HelloReply</code> contains <code>today</code> field, due to client has not updated, it still work, but just ignroe <code>today</code> field in the HelloReply message. this feature is super useful for the application which is already in prodcution mode, we could update server first anad the server clould support client call no mater it update the protobuf or not. there are some other benefits we could get from GRPC, I will discuss them in other articles</p>
+      <p>EKS Cluster is a fleet of ec2 instances which provide the underlying compute power, when we schedule a pod, the first thing it need to do is to pull docker image and save it into ec2 host's root disk. we could not predict how many pods and what kind of pods is going to schedule on the ec2 node , so it's essential to provision enough root diskspace for each  ec2 host<br />
+<figure><img src="../../images/eks.png" alt="eks"></figure></p>
+<p>we learn this lesson hard by painful issues, our eks production is mainly for data processing and we suddenly having a lot of pod eviction issues, if we describe the pod, k8s will report disk pressure and start to evict pod on the ec2 host. initially we think it maybe caused by we output too many logs or download too many intermediate file without clean up, but in the end it's not that case. it's caused by our docker image is too large and ec2 root disk is too small, after we expend the ec2 root disk from 20G to 200G, the eviction issue gone away totally.</p>
+<p>I explain this to the team like below, imagine you have a 2 bed rooms house, but there are 10 people try to sleep in, you have to kick off extra people to make sure your room could only host certain number of people , this is how the eviction issue happen, if you want to host all the 10 people , you have to expend your house to build more bed rooms, so that all 10 people could sleep in your house.</p>
     </div>
   </div>
 </div>
