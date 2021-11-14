@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - encryption and decryption in python</title>
+  <title>Mind - Use requests_mock to test requests logic</title>
   
     
   
-  <meta name="description" content="Recently I need to design a way to store and transfer sensitive data in a secure way, as the data is sensitive, no one could see the data except the owner, our system is only granted to get the plain text at run time, when storing or transferring the data, it must remains encrypted and the password for encryption shoul">
+  <meta name="description" content="When Testing http requests in Python, if we run agains real endpoint, sometimes it will be as slow as turtle, and also have a chance to slam it. it's a good idea if we could mock http endpoint and control what we want to return to test our logic, then requests_mock come to my front. in simple use case, we could just us">
   
   
   
@@ -99,7 +99,7 @@
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>encryption and decryption in python</span>
+        <span>Use requests_mock to test requests logic</span>
       </div>
 
     </div>
@@ -113,75 +113,56 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>encryption and decryption in python</h1>
+    <h1>Use requests_mock to test requests logic</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">28 Jun 2021 20:03:52</span>
+      <span class="updated">14 Nov 2021 19:15:19</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>Recently I need to design a way to store and transfer sensitive data in a secure way, as the data is sensitive, no one could see the data except the owner, our system is only granted to get the plain text at run time, when storing or transferring the data, it must remains encrypted and the password for encryption should be encrypted as well, we also requested not use any hard coded password to do encryption and decryption</p>
-<p><figure><img src="../../images/Encryption-Decryption.png" alt="Encryption-Decryption"></figure></p>
-<p>there are 2 types of encryption mechanisms <code>Symmetric encryption</code> and <code>Asymmetric encryption</code>, Symmetric encryption uses a private key to encrypt and decrypt, Asymmetric encryption uses the public key of the recipient to encrypt the message. Then if the recipient wants to decrypt the message the recipient will have to use his/her private key to decrypt, we could tell, Asymmetric encryption is safer than Symmetric encryption, but it's not as efficient as Symmetric encryption and only suitable for small amount of data (e.g: key or password) encryption. https protocol is using the same way , it's using Asymmetric encryption to exchange the password, then use Symmetric encryption to exchange the actual content. I would like to do the same.</p>
-<p>for Asymmetric encryption, we use <a href="https://simple.wikipedia.org/wiki/RSA_algorithm">RSA</a> algorithm, for Symmetric encryption, we use <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES-256</a> algorithm.  end user could provide us a pubkey and we could use the pubkey to encrypt any AES password and iv, for the actual content , for actual content, we could use AES-256 algorithm to encrypt the actual content and deliver &quot;rsa_encrypted_aes_password , rsa_encrypted_aes_iv , aes_encrypted_data&quot; to end user, when end user get the data, they could use their private key to decrypt <code>rsa_encrypted_aes_password</code> and <code>rsa_encrypted_aes_iv</code>, then use them to decrypt <code>aes_encrypted_data</code>.</p>
-<p><a href="https://pypi.org/project/pycryptodome/">pycryptodome</a> provide out of box support for both RSA and AES algorithm</p>
-<p>for RSA encryption and decryption, we could use code like below</p>
-<pre><code>    from Crypto.Cipher import PKCS1_OAEP
-    from Crypto.PublicKey import RSA
-    
-    def rsa_encrypt(original_data: bytes) -&gt; bytes:
-        &quot;&quot;&quot;
-        use cust_key to encrypt the data
-        :return: base64 encoded encrypted str
-        &quot;&quot;&quot;
-        rsa_public_key = RSA.import_key(get_pubkey())
-        cipher_rsa = PKCS1_OAEP.new(rsa_public_key)
-        return cipher_rsa.encrypt(original_data)
-
-    def rsa_decrypt(encrypted_content: bytes, private_key: bytes) -&gt; bytes:
-        rsa_private_key = RSA.import_key(private_key)
-        cipher_rsa = PKCS1_OAEP.new(rsa_private_key)
-        return cipher_rsa.decrypt(encrypted_content)
+      <p>When Testing http requests in Python, if we run agains real endpoint, sometimes it will be as slow as turtle, and also have a chance to slam it. it's a good idea if we could mock http endpoint and control what we want to return to test our logic, then requests_mock come to my front.</p>
+<p><figure><img src="../../images/python-requests.png" alt="python-requests"></figure></p>
+<p>in simple use case, we could just use request Mocker , the Mocker will do all the ground work for us assume we have code below</p>
+<pre><code>def get_my_ip()-&gt;Dict:
+    response = requests.get(&quot;http://lumtest.com/myip.json&quot;)
+    return response.json()
 </code></pre>
-<p>for AES encryption and decryption, we could use code like below</p>
-<pre><code>    from Crypto.Cipher import AES
-    from Crypto.Util.Padding import pad, unpad
-    def aes_encrypt(
-        original_data: bytes,
-        aes_secret: Optional[bytes] = None,
-        aes_iv: Optional[bytes] = None,
-    ) -&gt; Tuple[bytes, bytes, bytes]:
-        &quot;&quot;&quot;
-        use aes encrypt to encrypt the data
-        :param original_data:
-        :return: turple of (encrypted data in bytes, rsa encrypted aes_secret, rsa encrypted aes_iv
-        &quot;&quot;&quot;
-        # use aes-256-cbc 32*8=256 bit
-        if not aes_secret:
-            aes_secret = os.urandom(32)
-        if not aes_iv:
-            aes_iv = os.urandom(16)
-        cipher = AES.new(aes_secret, AES.MODE_CBC, iv=aes_iv)
-        # use default pkcs7 padding
-        return (
-            cipher.encrypt(pad(original_data, AES.block_size)),
-            rsa_encrypt(aes_secret),
-            rsa_encrypt(aes_iv),
-        )
-
-    def aes_decrypt(
-        encrypted_content: bytes, aes_secret: bytes, aes_iv: bytes
-    ) -&gt; bytes:
-        cipher = AES.new(aes_secret, AES.MODE_CBC, iv=aes_iv)
-        return unpad(cipher.decrypt(encrypted_content), AES.block_size)    
+<p>when we want to test it in pytest, we could use Mocker</p>
+<pre><code>def test_get_my_ip():
+    with requests_mock.Mocker() as m:
+        m.get(&quot;http://lumtest.com/myip.json&quot;, json={&quot;key&quot;: &quot;value&quot;})
+        res = get_my_ip()
+        assert res[&quot;key&quot;]== &quot;value&quot;
 </code></pre>
-<p>wait a second, there is 1 misleading point, we got user's pubkey and we need to store it somewhere in a secure way, store pubkey in a clear text may not be a good idea, so we decide to use KMS to encrypt the pubkey and put it into s3, with this we do not have any hard coded password and everything we store/transfer is encrypted by default<br />
-for KMS encryption and decryption we could use <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kms.html#KMS.Client.encrypt">boto3 kms client</a></p>
-<p>to test kms, we could use <a href="https://github.com/spulec/moto">moto</a> , sample kms test could be found <a href="https://github.com/spulec/moto/blob/master/tests/test_kms/test_kms_boto3.py">https://github.com/spulec/moto/blob/master/tests/test_kms/test_kms_boto3.py</a></p>
+<p>or using the decorator</p>
+<pre><code>@requests_mock.Mocker(kw='mock')
+def test_get_my_ip(**kwargs):
+    from ipa.crawler import ipa_fetcher
+    kwargs['mock'].get(&quot;http://lumtest.com/myip.json&quot;, json={&quot;key&quot;: &quot;value&quot;})
+    res = ipa_fetcher.get_my_ip()
+    assert res[&quot;key&quot;] == &quot;value&quot;
+</code></pre>
+<p>when we want more control on request matching or dynamic result, we need to use use mock adapter, to use mock adapter, we have to change the original method implementation to accept http session as parameter</p>
+<pre><code>def get_my_ip(session: Session, url: str) -&gt; Dict:
+    response = session.get(url)
+    return response.json()
+</code></pre>
+<p>to test this type of code, we could implement as below</p>
+<pre><code>def test_get_my_ip():
+    from ipa.crawler import ipa_fetcher
+    import requests
+    session = requests.Session()
+    adapter = requests_mock.Adapter()
+    session.mount('mock://', adapter)
+    adapter.register_uri(&quot;GET&quot;, &quot;mock://lumtest.com/myip.json&quot;, json={&quot;key&quot;: &quot;value&quot;})
+    res = ipa_fetcher.get_my_ip(session, &quot;mock://lumtest.com/myip.json&quot;)
+    assert res[&quot;key&quot;] == &quot;value&quot;
+</code></pre>
+<p>with the adapter object, we could use regex to match url and provide dynamic response to the request.</p>
     </div>
   </div>
 </div>
