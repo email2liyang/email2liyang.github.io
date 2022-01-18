@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - Airflow is not a data processing engine</title>
+  <title>Mind - The one stop Ingress controller for AWS Part 1</title>
   
     
   
-  <meta name="description" content="In previous articles, I've introduced how to deploy airflow into kubernetes and how to organize airflow project in an efficinet way, in real development work, I've also seem someone use airflow to do big data processing. I think this is a very big missunderstaing about ariflow. in airflow's offical webiste, it already">
+  <meta name="description" content="I'm looking for a suitable ingress controller for years to deploy to my EKS env, I have a various of type of use cases around ingress controller,I've used to use multiple ingress controllers to meet different purpose. I need to exposee my grpc servers inside vpc (EKS service with node port) I need to expose my REST ser">
   
   
   
@@ -95,11 +95,11 @@
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <a href="../kube.html">Kube</a>
+        <a href="../aws.html">Aws</a>
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>Airflow is not a data processing engine</span>
+        <span>The one stop Ingress controller for AWS Part 1</span>
       </div>
 
     </div>
@@ -113,31 +113,120 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>Airflow is not a data processing engine</h1>
+    <h1>The one stop Ingress controller for AWS Part 1</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">22 Dec 2019 13:18:25</span>
+      <span class="updated">18 Jan 2022 16:22:10</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>In previous articles, I've introduced <a href="https://www.vipmind.me/infra/kube/deploy-apache-airflow-cluster-into-kubernetes.html">how to deploy airflow into kubernetes</a> and <a href="https://www.vipmind.me/programing/python/organize-airflow-project-in-an-efficient-way.html">how to organize airflow project in an efficinet way</a>, in real development work, I've also seem someone use airflow to do big data processing. I think this is a very big missunderstaing about ariflow. in airflow's offical webiste, it already declared very clearly that <code>Airflow is a platform to programmatically author, schedule and monitor workflows.</code> but not declare itself as a data processing engine. in my view airflow is lacking of 2 critical data processing engine features.</p>
-<p><figure><img src="../../images/airflow.png" alt="airflow"></figure></p>
-<h2 id="airflow-is-lack-of-capability-to-pass-data-between-tasks-1">Airflow is lack of capability to pass data between tasks</h2>
-<p>In a real world data processing flow job, it always involve mutiple steps to process the data, this include</p>
-<ol>
-<li>load data from external data source (e.g: database, csv files, SQS topics or Big Query Tables)</li>
-<li>pass the loaded data into next steps for processing , the process could include mutiple steps transformation or filtering</li>
-<li>persist result back to exterenal data sink</li>
-</ol>
-<p>Data processing engine, like <code>Flink</code> or <code>Spark</code> they support such concept out of box, to load and sink data , they have different connecoters to connect to different data source. after data is loaded into the engine, the data do not need to perisist into any intermediat storage to share between tasks, the intermediat data could be passed between different tasks out of box. for <code>Flink</code> it is using <a href="https://github.com/EsotericSoftware/kryo">Kryo</a> by default.  but in airflow it does not support this, when we want to share data between tasks we have to persist the interemediate result to somewhere (e.g: database), then load the data in next tasks, this makes the data processing very insufficient .</p>
-<h2 id="airflow-is-a-shared-instance-or-cluster-to-manage-data-jobs-2">Airflow is a shared instance or cluster to manage data jobs</h2>
-<p>Airflow is heavily using mysql and rabbitmq to manage the dags's task dependnecies and dag runs. Airflow actually is a collection of data jobs, this is ok when we just triggering / scheduling / monitoring data jobs, because in airflow we could set <code>retries</code> parameter to retry on failure, this may happen when we need to redeploy airflow to enalbe more jobs etc. but when we use airflow to as data processing engine, the data processing maybe interruppted and airflow has no good way to resume the interruppted job without data lost. when we get more and more data processing jobs in airflow , it will be more and more offten that the data processing job will be impacted by other jobs.</p>
-<p>on the ohter hand , data processing engine like <code>Flink</code> or <code>Spark</code> could be deployed as single data process job per clusetr approach, e.g: we could depliy <code>Spark</code> job into kubernetes for just one job. this architechture could guarantee that each data processing job is running in an isolated env, so no cross job impact.this gives the developer a great freedom to develop / manage run their own data job without need to think of impact others.</p>
-<p>So if you plan to use airflow, calm down for a second,think about what you really want from airflow, if you want the ability to  triggering / scheduling / monitoring, go for it , it will do a great job in this area, if you want to process big data, no, no ,no, think about <code>Flink</code> or <code>Spark</code> instead.</p>
+      <p>I'm looking for a suitable ingress controller for years to deploy to my EKS env, I have a various of type of use cases around ingress controller,I've used to use multiple ingress controllers to meet different purpose.</p>
+<ul>
+<li>I need to exposee my grpc servers inside vpc (EKS service with node port)</li>
+<li>I need to expose my REST service inside vpc (EKS service with node port)</li>
+<li>I need to expose my REST service to internet with ssl support + authentication (Kong Ingress Controller and Nginx Ingress Controller,the the typs of ingress contoller to provide different auth types)</li>
+<li>I need to expose my mysql protocol compatible service inside vpc (EKS service with node port)</li>
+</ul>
+<p><figure><img src="../../images/alb.png" alt="alb"></figure></p>
+<p>now I meet ALB V2 <a href="https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/">AWS Load Balancer Controller</a>, I used to use ALB V1, that's not meet my use case,one big problem about V1 is that it could not monitor service across namespace,  Version 2 of ALB has improve significantly. I could use it to create both NLB and ALB both  internally or externally.</p>
+<p>use case 1: I have a service written in grpc, it will expose both GRPC service and REST service (the REST service is a bonus service when I use GRPC + Google Endpoint). I want to expose it inside VPC so that other service could use the endpoint. when I redeploy the pod, the endpoint will change accordingly. here is the the deployment yaml</p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acme-api
+spec:
+  selector:
+    matchLabels:
+      app: acme-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: acme-api
+    spec:
+      containers:
+      - name: acme-api
+        image: us.gcr.io/acme/acme-api:1
+        imagePullPolicy: Always
+        resources:
+         requests:
+          memory: 128Mi
+        readinessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - ps -ef | grep server | grep -v &quot;grep&quot;
+          initialDelaySeconds: 8
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - ps -ef | grep server | grep -v &quot;grep&quot;
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
+        ports:
+        - name: grpc
+          containerPort: 8080
+        volumeMounts:
+          - name: config-volume
+            mountPath: /app/.env
+            subPath: .env
+      - name: esp
+        image: gcr.io/endpoints-release/endpoints-runtime:1
+        imagePullPolicy: Always
+        args: [
+            &quot;--http_port=9000&quot;,
+            &quot;--backend=grpc://127.0.0.1:8080&quot;,
+            &quot;--service={{.service_name}}&quot;,
+            &quot;--version={{.service_conf}}&quot;,
+            &quot;--transcoding_preserve_proto_field_names&quot;,
+            &quot;--transcoding_always_print_primitive_fields&quot;,
+            &quot;--service_account_key=/etc/nginx/creds/google-service-account-key-name&quot;
+        ]
+        ports:
+          - name: http
+            containerPort: 9000
+        volumeMounts:
+          - mountPath: /etc/nginx/creds
+            name: google-service-account-key
+            readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: acme-cm
+        - name: google-service-account-key
+          secret:
+            secretName: google-service-account-key
+</code></pre>
+<p>the service yaml</p>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: acme-api
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: &quot;external&quot;
+    service.beta.kubernetes.io/aws-load-balancer-scheme: &quot;internal&quot;
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: &quot;ip&quot;
+spec:
+  type: LoadBalancer
+  ports:
+  - name: grpc
+    port: 8080
+    targetPort: 8080
+  - name: http
+    port: 9000
+    targetPort: 9000
+  selector:
+    app: acme-api
+</code></pre>
+<p>I deploy a LoadBalancer type of service, with 3 annotations. ALB V2 will create a NLB for me and it will forward any request on 8080  or 9000 to my pod directly. <code>service.beta.kubernetes.io/aws-load-balancer-scheme: &quot;internal&quot;</code> means the NLB will be private, after NLB is created I could use the NLB's dns as service endpoint in my source code , whenever my deployment/pod get redeployed, the NLB's target group will refresh the IP address automatically. so I could say good by to my node port + customised DNS name for my node IP.</p>
     </div>
   </div>
 </div>
