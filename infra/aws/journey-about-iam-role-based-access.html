@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - Journey about IAM role based access</title>
+  
+    
+  
+  <meta name="description" content="Our organization has enabled aws role based access across the organization, long story short, no aws_access_key_id and aws_secret_access_key could be used any more, instead we must use role based and aws STS to gain aws resource access there are 2 categories of Role based access, the user and the aws compute resources.">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1642818827307' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1642818827307"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../infra.html">Infra</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../aws.html">Aws</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>Journey about IAM role based access</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>Journey about IAM role based access</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">22 Jan 2022 09:46:12</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>Our organization has enabled aws role based access across the organization, long story short, no <code>aws_access_key_id</code> and <code>aws_secret_access_key</code> could be used any more, instead we must use role based and aws STS to gain aws resource access</p>
+<p><figure><img src="../../images/aws-role-based-access.png" alt="aws-role-based-access"></figure></p>
+<p>there are 2 categories of Role based access, the user and the aws compute resources.</p>
+<h2 id="developer-access-1">Developer Access</h2>
+<p>we've enabled azure sso with aws , so anyone who want's to access aws resources must go through azure sso and gain access to aws console by assuming relevant role. if we want to access aws resources through aws cli locally, I'm using a tool called <a href="https://www.npmjs.com/package/aws-azure-login">aws-azure-login</a>, use <code>npm install -g aws-azure-login</code> to install, then config <code>~/.aws/config</code> with content below</p>
+<pre><code>[profile dev-profile]
+output=json
+region=us-east-1
+azure_tenant_id=11111111-1111-1111-1111-111111111111
+azure_app_id_uri=11111111-1111-1111-1111-111111111111
+azure_default_username=ivan@vimmind.me
+azure_default_role_arn=
+azure_default_duration_hours=8
+azure_default_remember_me=true
+</code></pre>
+<p>if we leave azure_default_role_arn as blank, when issue command <code>aws-azure-login --profile dev-profile</code> it will allow us to select which role to assume after successful go through azure sso process.</p>
+<p>then we could get sample content below in <code>~/.aws/credentails</code></p>
+<pre><code>[dev-profile]
+aws_access_key_id=xxxxxxxxxxxxxxxxx
+aws_secret_access_key=xxxxxxxxxxxxxxxxx
+aws_session_token=&quot;xxxxxxxxxxxxxxxxxxxxxxxxxx&quot;
+</code></pre>
+<p>as a temp aws access key it will be valid for 8 hours (normal working hours), then we could use aws cli to communicate with aws resources normally</p>
+<h2 id="aws-compute-resource-access-2">aws compute resource access</h2>
+<p>we mainly use 3 types of aws compute resources</p>
+<ul>
+<li>the ec2</li>
+<li>the lambda functions</li>
+<li>the eks pod</li>
+</ul>
+<h3 id="ec2-and-lambda-functions-3">ec2 and lambda functions</h3>
+<p>we need to create a role to and attach related permissions to the role which allow the compute resources to perform, then we need to trust <code>ec2.amazonaws.com</code> and <code>lambda.amazonaws.com</code> to perform <code>sts:AssumeRole</code> action, further more, for EC2 resources, we need to attach an iam instance profile to the role, so that the ec2 resources could use them, a sample terraform scripts is like below</p>
+<pre><code>resource &quot;aws_iam_role&quot; &quot;runtime-role&quot; {
+  name = &quot;${var.env-name}-runtime-role&quot;
+  managed_policy_arns = [
+    &quot;arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole&quot;
+  ]
+  # Terraform's &quot;jsonencode&quot; function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    &quot;Version&quot; : &quot;2012-10-17&quot;
+    &quot;Statement&quot; : [
+      {
+        &quot;Action&quot; : &quot;sts:AssumeRole&quot;,
+        &quot;Effect&quot; : &quot;Allow&quot;,
+        &quot;Principal&quot; : {
+          &quot;Service&quot; : &quot;ec2.amazonaws.com&quot;
+        }
+      },
+      {
+        &quot;Action&quot; : &quot;sts:AssumeRole&quot;,
+        &quot;Effect&quot; : &quot;Allow&quot;,
+        &quot;Principal&quot; : {
+          &quot;Service&quot; : &quot;lambda.amazonaws.com&quot;
+        }
+      }
+    ]
+  })
+
+  tags = var.resource_tags
+}
+
+resource &quot;aws_iam_instance_profile&quot; &quot;runtime-profile&quot; {
+  name = &quot;${var.env-name}-runtime-profile&quot;
+  role = aws_iam_role.runtime-role.name
+}
+</code></pre>
+<h3 id="eks-pod-access-4">eks pod access</h3>
+<p>it's a little bit complicated when we want to grant aws access to pod based on role. here is a detailed explanation on how to enabled role based access for service account, <a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html">https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html</a></p>
+<ol>
+<li>need to add the eks oidc issuer to aws IAM OICD provider, this could be done via aws console</li>
+<li>need to trust eks oidc and eks's designed service account</li>
+<li>create an eks service account which has iam role as an annotation</li>
+</ol>
+<p>for step 2, below is the sample terraform scripts, this will allowed my eks in ap-southeast-2 in namespace <code>dev</code> could assume aws role.</p>
+<pre><code>resource &quot;aws_iam_role&quot; &quot;runtime-role&quot; {
+  name = &quot;${var.env-name}-runtime-role&quot;
+  managed_policy_arns = [
+    &quot;arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole&quot;
+  ]
+  # Terraform's &quot;jsonencode&quot; function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    &quot;Version&quot; : &quot;2012-10-17&quot;
+    &quot;Statement&quot; : [
+      {
+        &quot;Effect&quot; : &quot;Allow&quot;,
+        &quot;Principal&quot; : {
+          &quot;Federated&quot; : &quot;arn:aws:iam::111111111:oidc-provider/oidc.eks.ap-southeast-2.amazonaws.com/id/xxxxxxxx&quot;
+        },
+        &quot;Action&quot; : &quot;sts:AssumeRoleWithWebIdentity&quot;,
+        &quot;Condition&quot; : {
+          &quot;StringEquals&quot; : {
+            &quot;oidc.eks.ap-southeast-2.amazonaws.com/id/xxxxxxxx:sub&quot; : &quot;system:serviceaccount:dev:runtime-serviceaccount&quot;
+          }
+        }
+      }
+    ]
+  })
+
+  tags = var.resource_tags
+}
+</code></pre>
+<p>for step 3, here is a sample service creation yaml file</p>
+<pre><code>apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: runtime-serviceaccount
+  namespace: dev
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::1111111:role/runtime-role
+    eks.amazonaws.com/sts-regional-endpoints: &quot;true&quot;
+</code></pre>
+<p>when create a pod with service account, it will have 2 ENV populated in the pod envs <code>AWS_WEB_IDENTITY_TOKEN_FILE</code> , and <code>AWS_ROLE_ARN</code>, then we could use aws cli inside pod to communicated with AWS resources based on permission allowed in role <code>arn:aws:iam::1111111:role/runtime-role</code></p>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>
