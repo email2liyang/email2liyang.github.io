@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - How to use ephemeral disk from EC2 instance in EKS</title>
+  <title>Mind - The one stop Ingress controller for AWS Part 2</title>
   
     
   
-  <meta name="description" content="EKS could mount EBS as Persistent Volumes in EKS cluster, we could also declear PersistentVolumnClaim to provision PV dynamically , this is great and we could treat EBS as our EKS disk pool to claim almost unlimited disk inside kubernetes pod. EBS also have different volume types, each volume type could support differe">
+  <meta name="description" content="I've expressed on how to use LoadBalancer type of k8s service to create NLB with AWS Load Balancer Controller in part 1, now I'm going to use Ingress to create an ALB to serve multiple services across namespaces NLB is good to act as Layer 4 load balancer, but one drawback we could not avoid is that we have to create a">
   
   
   
@@ -99,7 +99,7 @@
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>How to use ephemeral disk from EC2 instance in EKS</span>
+        <span>The one stop Ingress controller for AWS Part 2</span>
       </div>
 
     </div>
@@ -113,64 +113,165 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>How to use ephemeral disk from EC2 instance in EKS</h1>
+    <h1>The one stop Ingress controller for AWS Part 2</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">19 Sep 2019 20:09:14</span>
+      <span class="updated">18 Jan 2022 16:22:10</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>EKS could mount <a href="https://aws.amazon.com/ebs/">EBS</a> as <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">Persistent Volumes</a> in EKS cluster, we could also declear <a href="https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/#using-dynamic-provisioning">PersistentVolumnClaim</a> to provision PV dynamically , this is great and we could treat EBS as our EKS disk pool to claim almost unlimited disk inside kubernetes pod. EBS also have different <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">volume types</a>, each volume type could support different type of IOPS. some EC2 instance could also have <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a>, these volumes are in the same physical server as the ec2 instance, so they usually have better performance then EBS, the draw back of <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> is that when EC2 instance get rebooted or shutdown, ec2 instnace may move to other host machine and the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> will be lost. if we are ok about this draw back, the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> could give us best IO and no additional charge of EBS.</p>
-<p><figure><img src="../../images/eks-on-ec2-disk.png" alt="eks-on-ec2-disk"></figure><br />
-I have a use case which <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> fits us very well, I will need to launch a search  server in a pod, the search server will first download the indexed file into local disk and servie online query, this is very IO sensitive service, since we could place the index file into a safe place, e.g: s3 and download it into local disk, I could use <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> to be mount into my pod to keep the index copy and the searchd could also access <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> to do real time query with the best IO performance. below is the steps how I provision the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a>  and use it in my pod. Different EC2 instance will have different <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a>, I will use r3.2xlarge as an example</p>
-<ul>
-<li>Create an ASG Launch Configuration<br />
-I've already described <a href="https://www.vipmind.me/infra/kube/managing-eks-worker-nodes-dynamically-by-aws-auto-scaling-groups.html">how to use ASG to manage the worker nodes dynamically</a> , when we create an ASG Launch Configuration , in the userdata section we need some command to config the ec2 nodes</li>
-</ul>
-<pre><code>sbin/mkfs -t ext4 /dev/xvdb
-/bin/mkdir /media/ephemeral0
-/bin/mount /dev/xvdb /media/ephemeral0
-/bin/chown root:root -R /media/ephemeral0
-</code></pre>
-<p>these commands should be placed above <code>/etc/eks/bootstrap.sh</code></p>
-<ul>
-<li>Create ASG based on ASG Launch Configuration see <a href="https://www.vipmind.me/infra/kube/managing-eks-worker-nodes-dynamically-by-aws-auto-scaling-groups.html">this article</a> for details</li>
-<li>when the new ec2 instance managed by the defined ASG join EKS cluster, we could already have the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> ready to use</li>
-</ul>
-<pre><code>lsblk
-NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-xvda    202:0    0   20G  0 disk
-└─xvda1 202:1    0   20G  0 part /
-xvdb    202:16   0  150G  0 disk /media/ephemeral0
-</code></pre>
-<ul>
-<li>use /media/ephemeral0 in yaml file<br />
-we could declear hostPath type of volumes in kubernetes like below to mount /media/ephemeral0 in your pod container on /media/disk0</li>
-</ul>
-<pre><code>apiVersion: v1
-kind: Pod
+      <p>I've expressed on how to use LoadBalancer type of k8s service to create NLB with <a href="https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/">AWS Load Balancer Controller</a> in <a href="https://www.vipmind.me/infra/aws/the-one-stop-ingress-controller-for-aws-part-1.html">part 1</a>, now I'm going to use Ingress to create an ALB to serve multiple services across namespaces</p>
+<p><figure><img src="../../images/alb.png" alt="alb"></figure></p>
+<p>NLB is good to act as Layer 4 load balancer, but one drawback we could not avoid is that we have to create a NLB for each service and it's costy, if we only expose RESTFUL service, we could aggragate all the RESTFUL service into one ALB. below is an example</p>
+<p>the deployment is the same as <a href="https://www.vipmind.me/infra/aws/the-one-stop-ingress-controller-for-aws-part-1.html">part 1</a></p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: pv-recycler
-  namespace: default
+  name: acme-api
 spec:
-  restartPolicy: Never
-  volumes:
-  - name: vol
-    hostPath:
-      path: /media/ephemeral0
-  containers:
-  - name: pv-recycler
-    image: &quot;k8s.gcr.io/busybox&quot;
-    command: [&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;echo 'hello'&quot;]
-    volumeMounts:
-    - name: vol
-      mountPath: /media/disk0
+  selector:
+    matchLabels:
+      app: acme-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: acme-api
+    spec:
+      containers:
+      - name: acme-api
+        image: us.gcr.io/acme/acme-api:1
+        imagePullPolicy: Always
+        resources:
+         requests:
+          memory: 128Mi
+        readinessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - ps -ef | grep server | grep -v &quot;grep&quot;
+          initialDelaySeconds: 8
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - ps -ef | grep server | grep -v &quot;grep&quot;
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
+        ports:
+        - name: grpc
+          containerPort: 8080
+        volumeMounts:
+          - name: config-volume
+            mountPath: /app/.env
+            subPath: .env
+      - name: esp
+        image: gcr.io/endpoints-release/endpoints-runtime:1
+        imagePullPolicy: Always
+        args: [
+            &quot;--http_port=9000&quot;,
+            &quot;--backend=grpc://127.0.0.1:8080&quot;,
+            &quot;--service={{.service_name}}&quot;,
+            &quot;--version={{.service_conf}}&quot;,
+            &quot;--transcoding_preserve_proto_field_names&quot;,
+            &quot;--transcoding_always_print_primitive_fields&quot;,
+            &quot;--service_account_key=/etc/nginx/creds/google-service-account-key-name&quot;
+        ]
+        ports:
+          - name: http
+            containerPort: 9000
+        volumeMounts:
+          - mountPath: /etc/nginx/creds
+            name: google-service-account-key
+            readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: acme-cm
+        - name: google-service-account-key
+          secret:
+            secretName: google-service-account-key
 </code></pre>
-<p>now in the pod <code>pv-recycler</code> I could write any logic to use disk <code>/media/disk0</code>, it will use <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html">Instance Store Volumes</a> under the hood and offer the best IO performance.</p>
+<p>the service definition is different from part 1, I've changed the service type to <code>NodePort</code> and remove all the annotation from service definition</p>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: acme-api
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 9000
+    targetPort: 9000
+  selector:
+    app: acme-api
+</code></pre>
+<p>one extra step I need to do is to create the ingress part,<br />
+to aggregate different ingress into the same ALB, we need to define <code>alb.ingress.kubernetes.io/group.name: acme</code>, the ingress with the same group.name will share the same ALB, we could also customize the health check path via <code>alb.ingress.kubernetes.io/healthcheck-path</code>, this path must support http GET method and return 200 , so that the target could be registered in ALB</p>
+<ul>
+<li>the dev ingress</li>
+</ul>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    # Ingress Core Settings
+    kubernetes.io/ingress.class: &quot;alb&quot;
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /acme/common/echo/acme
+    alb.ingress.kubernetes.io/group.name: acme
+  name: acme-api
+  namespace: dev
+spec:
+  rules:
+  - host: dev-acme-api.vipmind.me
+    http:
+      paths:
+      - backend:
+          service:
+            name: acme-api
+            port:
+              number: 9000
+        path: /acme/
+        pathType: Prefix
+</code></pre>
+<ul>
+<li>the staging ingress</li>
+</ul>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    # Ingress Core Settings
+    kubernetes.io/ingress.class: &quot;alb&quot;
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /acme/common/echo/acme
+    alb.ingress.kubernetes.io/group.name: acme
+  name: acme-api
+  namespace: stg
+spec:
+  rules:
+  - host: stg-acme-api.vipmind.me
+    http:
+      paths:
+      - backend:
+          service:
+            name: acme-api
+            port:
+              number: 9000
+        path: /acme/
+        pathType: Prefix
+</code></pre>
+<p>I could use 2 ingress definition to aggregate the service from both dev and stg namespace together, because ALB works on layer 7, so it could check the host name and url etc.</p>
     </div>
   </div>
 </div>
