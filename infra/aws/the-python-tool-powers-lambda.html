@@ -15,11 +15,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mind - The one stop Ingress controller for AWS Part 1</title>
+  <title>Mind - The python tool powers lambda</title>
   
     
   
-  <meta name="description" content="I'm looking for a suitable ingress controller for years to deploy to my EKS env, I have a various of type of use cases around ingress controller,I've used to use multiple ingress controllers to meet different purpose. I need to exposee my grpc servers inside vpc (EKS service with node port) I need to expose my REST ser">
+  <meta name="description" content="aws-lambda-powertools-python is an useful toolset when you develop lambda functions in python, it contains several useful utilities to make lambda development easy. installation to install aws-lambda-powertools-python pip install aws-lambda-powertools I usually put it in requirements-test.txt because we could include t">
   
   
   
@@ -99,7 +99,7 @@
         <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
       </div>
       <div class="breadcrumb-item">
-        <span>The one stop Ingress controller for AWS Part 1</span>
+        <span>The python tool powers lambda</span>
       </div>
 
     </div>
@@ -113,120 +113,112 @@
   </div>
 </div><div class="c-title b7">
   <div class="c-title__content max-width-md">
-    <h1>The one stop Ingress controller for AWS Part 1</h1>
+    <h1>The python tool powers lambda</h1>
     <div class="meta">
       <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
       <a class="author">Ivan</a>
       <span class="meta-divider">/</span>
-      <span class="updated">18 Jan 2022 16:22:10</span>
+      <span class="updated">10 Mar 2022 17:05:37</span>
     </div>
   </div>
 </div><div class="c-article b8">
   <div class="c-article__content max-width-sm">
     <div id="article-body" class="article-body">
-      <p>I'm looking for a suitable ingress controller for years to deploy to my EKS env, I have a various of type of use cases around ingress controller,I've used to use multiple ingress controllers to meet different purpose.</p>
-<ul>
-<li>I need to exposee my grpc servers inside vpc (EKS service with node port)</li>
-<li>I need to expose my REST service inside vpc (EKS service with node port)</li>
-<li>I need to expose my REST service to internet with ssl support + authentication (Kong Ingress Controller and Nginx Ingress Controller,the the typs of ingress contoller to provide different auth types)</li>
-<li>I need to expose my mysql protocol compatible service inside vpc (EKS service with node port)</li>
-</ul>
-<p><figure><img src="../../images/alb.png" alt="alb"></figure></p>
-<p>now I meet ALB V2 <a href="https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/">AWS Load Balancer Controller</a>, I used to use ALB V1, that's not meet my use case,one big problem about V1 is that it could not monitor service across namespace,  Version 2 of ALB has improve significantly. I could use it to create both NLB and ALB both  internally or externally.</p>
-<p>use case 1: I have a service written in grpc, it will expose both GRPC service and REST service (the REST service is a bonus service when I use GRPC + Google Endpoint). I want to expose it inside VPC so that other service could use the endpoint. when I redeploy the pod, the endpoint will change accordingly. here is the the deployment yaml</p>
-<pre><code>apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: acme-api
-spec:
-  selector:
-    matchLabels:
-      app: acme-api
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: acme-api
-    spec:
-      containers:
-      - name: acme-api
-        image: us.gcr.io/acme/acme-api:1
-        imagePullPolicy: Always
-        resources:
-         requests:
-          memory: 128Mi
-        readinessProbe:
-          exec:
-            command:
-              - /bin/bash
-              - -c
-              - ps -ef | grep server | grep -v &quot;grep&quot;
-          initialDelaySeconds: 8
-          timeoutSeconds: 10
-        livenessProbe:
-          exec:
-            command:
-              - /bin/bash
-              - -c
-              - ps -ef | grep server | grep -v &quot;grep&quot;
-          initialDelaySeconds: 60
-          timeoutSeconds: 10
-        ports:
-        - name: grpc
-          containerPort: 8080
-        volumeMounts:
-          - name: config-volume
-            mountPath: /app/.env
-            subPath: .env
-      - name: esp
-        image: gcr.io/endpoints-release/endpoints-runtime:1
-        imagePullPolicy: Always
-        args: [
-            &quot;--http_port=9000&quot;,
-            &quot;--backend=grpc://127.0.0.1:8080&quot;,
-            &quot;--service={{.service_name}}&quot;,
-            &quot;--version={{.service_conf}}&quot;,
-            &quot;--transcoding_preserve_proto_field_names&quot;,
-            &quot;--transcoding_always_print_primitive_fields&quot;,
-            &quot;--service_account_key=/etc/nginx/creds/google-service-account-key-name&quot;
-        ]
-        ports:
-          - name: http
-            containerPort: 9000
-        volumeMounts:
-          - mountPath: /etc/nginx/creds
-            name: google-service-account-key
-            readOnly: true
-      volumes:
-        - name: config-volume
-          configMap:
-            name: acme-cm
-        - name: google-service-account-key
-          secret:
-            secretName: google-service-account-key
+      <p><a href="https://awslabs.github.io/aws-lambda-powertools-python/">aws-lambda-powertools-python</a> is an useful toolset when you develop lambda functions in python, it contains several useful utilities to make lambda development easy.</p>
+<p><figure><img src="../../images/lambda.png" alt="lambda"></figure></p>
+<h2 id="installation-1">installation</h2>
+<p>to install aws-lambda-powertools-python</p>
+<pre><code>pip install aws-lambda-powertools
 </code></pre>
-<p>the service yaml</p>
-<pre><code>apiVersion: v1
-kind: Service
-metadata:
-  name: acme-api
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: &quot;external&quot;
-    service.beta.kubernetes.io/aws-load-balancer-scheme: &quot;internal&quot;
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: &quot;ip&quot;
-spec:
-  type: LoadBalancer
-  ports:
-  - name: grpc
-    port: 8080
-    targetPort: 8080
-  - name: http
-    port: 9000
-    targetPort: 9000
-  selector:
-    app: acme-api
+<p>I usually put it in requirements-test.txt because we could include the package as a lambda layer</p>
+<p>to include the lambda layer, in SAM template.yaml</p>
+<pre><code>xxxEventListener:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: .
+      Role: !Ref IAMRoleARN
+      Handler: event_listener.handle
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPython:11
 </code></pre>
-<p>I deploy a LoadBalancer type of service, with 3 annotations. ALB V2 will create a NLB for me and it will forward any request on 8080  or 9000 to my pod directly. <code>service.beta.kubernetes.io/aws-load-balancer-scheme: &quot;internal&quot;</code> means the NLB will be private, after NLB is created I could use the NLB's dns as service endpoint in my source code , whenever my deployment/pod get redeployed, the NLB's target group will refresh the IP address automatically. so I could say good by to my node port + customised DNS name for my node IP.</p>
+<h2 id="the-logger-2">the logger</h2>
+<p>by default logger would not include python module name in the location field of log, if you are using multiple modules, you could override the log format as below</p>
+<pre><code>from aws_lambda_powertools import Logger
+location_format = &quot;%(module)s.%(funcName)s:%(lineno)d&quot;
+logger = Logger(location=location_format)
+</code></pre>
+<p>then we could include the module information in the log record</p>
+<p>we could also log the incoming event by just decorate handle method of the lambda</p>
+<pre><code>@logger.inject_lambda_context(log_event=True)
+def handle(event, context: LambdaContext):
+  pass
+</code></pre>
+<p>if we set POWERTOOLS_LOGGER_SAMPLE_RATE as env var, the value is between 0 and 1, it indicate the chance that logger framework sample the log to debug level, it's very useful in production.</p>
+<h2 id="the-tracer-3">the tracer</h2>
+<p>we could trace the lambda handler by adding decorator to the method like below</p>
+<pre><code>from aws_lambda_powertools import Tracer
+tracer = Tracer()
+
+@tracer.capture_lambda_handler
+def handle(event, context: LambdaContext):
+  pass
+</code></pre>
+<p>we could also decorate any method that we want to trace with</p>
+<pre><code>@tracer.capture_method
+def record_handler(record: SQSRecord):
+</code></pre>
+<p>we could then get trace detail from x-rays, the logger framework would include <code>xray_trace_id</code> in every log, so it's easy to locate the trace in x-ray with the id<br />
+<figure><img src="../../images/lambda-xray.png" alt="lambda-xray"></figure></p>
+<h2 id="the-batch-4">the batch</h2>
+<p>when we use lambda to process message from sqs we will get a batch of messages (e.g 10 messages in a batch) , if any message failed to process, all the messages in this batch will be send back to sqs queue, with batch procsssing tool, we could just send back the failed message.<br />
+when we attach a lambda function to a queue, make sure select &quot;ReportBatchItemFailures&quot; in Advanced options.</p>
+<p>jupm into the code sample</p>
+<pre><code>from aws_lambda_powertools.utilities.batch import (
+    BatchProcessor,
+    EventType,
+    batch_processor,
+)
+from aws_lambda_powertools.utilities.data_classes.sqs_event import SQSRecord
+from aws_lambda_powertools.utilities.typing import LambdaContext
+
+processor = BatchProcessor(event_type=EventType.SQS)
+
+@batch_processor(record_handler=record_handler, processor=processor)
+def handle(event, context: LambdaContext):
+    return processor.response()
+
+
+def record_handler(record: SQSRecord):
+    # logic to handle 1 sqs record
+    pass
+
+</code></pre>
+<h2 id="the-parameter-store-5">the parameter store</h2>
+<p>one way to manage lambda parameter is to use AWS ssm, we could store the parameter in a tree like structure, e.g:</p>
+<pre><code>/app/env/system/key1=val1
+/app/env/system/key2=val2
+</code></pre>
+<p>there are 2 ways to access these value from lambda</p>
+<h3 id="option-1-6">option 1</h3>
+<p>declare the key in sam parameter</p>
+<pre><code>Parameters:
+  Key1:
+    Description: the key 1 desc
+    Type: AWS::SSM::Parameter::Value&lt;String&gt;
+    Default: /app/env/system/key1
+</code></pre>
+<p>when we deploy the sam application, parameter Key1's value will be replaced by val1</p>
+<h3 id="option-2-7">option 2</h3>
+<pre><code>from aws_lambda_powertools.utilities import parameters
+value = parameters.get_parameter(&quot;/app/env/system/key1&quot;)
+
+value will be &quot;val1&quot;
+
+we could also retrieve a collection of items
+items = parameters.get_parameters(&quot;/app/env/system&quot;)
+for k, v in values.items():
+  logger.debug(f&quot;{k} -&gt; {v})
+</code></pre>
     </div>
   </div>
 </div>
