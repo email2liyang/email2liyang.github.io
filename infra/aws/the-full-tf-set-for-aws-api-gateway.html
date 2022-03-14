@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147718386-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147718386-1');
+</script>
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mind - the full TF set for AWS API Gateway</title>
+  
+    
+  
+  <meta name="description" content="I've spent a whole day to understand how to setup API gateway with my private NLB which is a LoadBalancer type of EKS service and expose some of the private REST API to public internet with api key protection. here is the terraform scripts to manage this journey the api it's where everything starts, the REST API resour">
+  
+  
+  
+  <link rel="shortcut icon" href="../../images/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link href='../../styles/main.min.css?v=1647256360756' rel='stylesheet' type='text/css'>
+  
+  <style></style>
+
+  
+<script>
+  var doc_layout_plugin = {
+    enabled: true
+  };
+</script>
+</head>
+<body>
+
+
+<script async type="text/javascript" language="javascript" src="../../plugins/plugins.nocache.js?v=1647256360756"></script>
+<iframe src="javascript:''" id="__gwt_historyFrame"
+        style="position:absolute;width:0;height:0;border:0" tabIndex="-1"></iframe>
+<!--[if lt IE 8]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="nav b5">
+  <div class="nav__content max-width-md">
+    <div class="nav__content__left">
+      <div class="nav__header">
+        <a class="logo" href="../../index.html" title="Home">
+          <img class="logo__img" src="../../images/logo.png" alt="VIP">
+          <span class="logo__name">Mind</span><span class="superscript">me</span>
+        </a>
+        <label id="menu-icon" class="nav__menu-toggle" for="menu-toggle-1">
+          <svg class="nav__menu-icon" viewBox="0 0 448 512"><rect y="398" width="448" height="36"/><rect y="78" width="448" height="36"/><polygon points="6 238 0 238 0 244 0 256 0 274 448 274 448 256 448 244 448 238 442 238 6 238"/></svg>
+        </label>
+      </div>
+      <input id="menu-toggle-1" class="hide" type="checkbox">
+      <div id="nav-menus-main" class="nav__menus">
+        <a href="../../programing.html">Programing</a>
+        <a href="../../infra.html">Infrastructure</a>
+        <a href="../../data.html">Data Processing</a>
+        <a href="../../life.html">Life is like chocolate</a>
+      </div>
+    </div>
+    <input id="menu-toggle-2" class="hide" type="checkbox">
+    <div id="nav-menus-right" class="nav__content__right">
+      <a href="../../about.html">About</a>
+    </div>
+  </div>
+</div><div id="crumb-bar" class="cbb b6">
+  <div class="cbb__content max-width-md">
+    <div class="left-part">
+      <div class="breadcrumb-item">
+        <a href="../..//">Home</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../.././toc.html">Table of Contents</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+
+      <div class="breadcrumb-item">
+        <a href="../../infra.html">Infra</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <a href="../aws.html">Aws</a>
+        <img class="icon-arrow" src="../../images/icon-arrow-right-gray.svg" alt="icon arrow right gray">
+      </div>
+      <div class="breadcrumb-item">
+        <span>the full TF set for AWS API Gateway</span>
+      </div>
+
+    </div>
+    <div class="right-part">
+      <div class="search-field">
+        <img class="icon-search" src="../../images/icon-search-gray.svg" alt="icon search gray">
+        <input id="breadcrumb-search-box" class="search-box" type="search" placeholder="Search... (double ⇧)">
+      </div>
+      <img id="back-to-top" src="../../images/icon-top-darkgray.svg" title="Back to Top" alt="icon top darkgray">
+    </div>
+  </div>
+</div><div class="c-title b7">
+  <div class="c-title__content max-width-md">
+    <h1>the full TF set for AWS API Gateway</h1>
+    <div class="meta">
+      <img class="avatar" src="../../images/default-avatar.jpg" alt="Ivan" title="Ivan">
+      <a class="author">Ivan</a>
+      <span class="meta-divider">/</span>
+      <span class="updated">14 Mar 2022 18:04:14</span>
+    </div>
+  </div>
+</div><div class="c-article b8">
+  <div class="c-article__content max-width-sm">
+    <div id="article-body" class="article-body">
+      <p>I've spent a whole day to understand how to setup API gateway with my private NLB which is a LoadBalancer type of EKS service and expose some of the private REST API to public internet with api key protection. here is the terraform scripts to manage this journey</p>
+<p><figure><img src="../../images/tf_and_api_gw.png" alt="tf_and_api_gw"></figure></p>
+<h2 id="the-api-1">the api</h2>
+<p>it's where everything starts, the REST API</p>
+<pre><code>resource &quot;aws_api_gateway_rest_api&quot; &quot;acme-api-gw-rest&quot; {
+  name = &quot;${var.env-name}-acme-api-gw-rest-${var.region-name}&quot;
+  endpoint_configuration {
+    types = [&quot;REGIONAL&quot;]
+  }
+  description = &quot;use to support transaction-id in global account&quot;
+
+  tags = var.resource_tags
+}
+</code></pre>
+<h2 id="the-vpc-link-2">the vpc link</h2>
+<p>rest api vpc link only support NLB, I've created the NLB with eks service loadbalancer with ALB controller, so put it's ARN here</p>
+<pre><code>resource &quot;aws_api_gateway_vpc_link&quot; &quot;acme-api-gw-vpc-link&quot; {
+  name        = &quot;${var.env-name}-acme-api-gw-vpc-link-${var.region-name}&quot;
+  description = &quot;vpc link for acme rest api&quot;
+  target_arns = [var.acme-private-nlb-arn]
+
+  tags = var.resource_tags
+}
+</code></pre>
+<h2 id="the-resources-3">the resources</h2>
+<p>we could create as many resources as we want , the root resources could be referenced from <code>aws_api_gateway_rest_api.acme-api-gw-rest.root_resource_id</code>,<br />
+here I create a resource on path <code>/acme/common/echo/{msg}</code><br />
+<code>{msg}</code> is the path parameter, we could pass to backend</p>
+<pre><code>resource &quot;aws_api_gateway_resource&quot; &quot;acme-api-gw-rs-acme&quot; {
+  rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  parent_id   = aws_api_gateway_rest_api.acme-api-gw-rest.root_resource_id
+  path_part   = &quot;acme&quot;
+}
+resource &quot;aws_api_gateway_resource&quot; &quot;acme-api-gw-rs-acme-common&quot; {
+  rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  parent_id   = aws_api_gateway_resource.acme-api-gw-rs-acme.id
+  path_part   = &quot;common&quot;
+}
+resource &quot;aws_api_gateway_resource&quot; &quot;acme-api-gw-rs-acme-common-echo&quot; {
+  rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  parent_id   = aws_api_gateway_resource.acme-api-gw-rs-acme-common.id
+  path_part   = &quot;echo&quot;
+}
+resource &quot;aws_api_gateway_resource&quot; &quot;acme-api-gw-rs-acme-common-echo-msg&quot; {
+  rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  parent_id   = aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo.id
+  path_part   = &quot;{msg}&quot;
+}
+</code></pre>
+<h2 id="the-method-4">the method</h2>
+<p>we could attach GET/POST/PUT/DELETE/PATCH/HEAD or ANY method to a resource, if there is a path parameter, we need to declare in <code>request_parameters</code> section, later we will use it in integration</p>
+<pre><code>resource &quot;aws_api_gateway_method&quot; &quot;acme-api-gw-rs-acme-common-echo-msg-get&quot; {
+  rest_api_id      = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  resource_id      = aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo-msg.id
+  http_method      = &quot;GET&quot;
+  authorization    = &quot;NONE&quot;
+  api_key_required = true
+
+  request_parameters = {
+    &quot;method.request.path.msg&quot; = true
+  }
+}
+resource &quot;aws_api_gateway_method_response&quot; &quot;acme-api-gw-rs-acme-common-echo-msg-get-200&quot; {
+  rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  resource_id = aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo-msg.id
+  http_method = aws_api_gateway_method.acme-api-gw-rs-acme-common-echo-msg-get.http_method
+  status_code = &quot;200&quot;
+}
+</code></pre>
+<h2 id="the-integration-5">the integration</h2>
+<p>integration represent the backend url which doing the actual work, we use <code>connection_id</code> to connect the integration into the VPC we created before and we also use <code>request_parameters</code> to map the request parameter to the integration path parameter.</p>
+<pre><code>resource &quot;aws_api_gateway_integration&quot; &quot;acme-api-gw-rs-acme-common-echo-msg-get-integration&quot; {
+  rest_api_id             = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  resource_id             = aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo-msg.id
+  http_method             = aws_api_gateway_method.acme-api-gw-rs-acme-common-echo-msg-get.http_method
+  connection_type         = &quot;VPC_LINK&quot;
+  connection_id           = aws_api_gateway_vpc_link.acme-api-gw-vpc-link.id
+  integration_http_method = &quot;GET&quot;
+  type                    = &quot;HTTP&quot;
+  uri                     = &quot;http://${var.acme-private-nlb-dns}/acme/common/echo/{msg}&quot;
+  request_parameters = {
+    &quot;integration.request.path.msg&quot; = &quot;method.request.path.msg&quot;
+  }
+}
+resource &quot;aws_api_gateway_integration_response&quot; &quot;acme-api-gw-rs-acme-common-echo-msg-get-integration-response&quot; {
+  rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  resource_id = aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo-msg.id
+  http_method = aws_api_gateway_method.acme-api-gw-rs-acme-common-echo-msg-get.http_method
+  status_code = aws_api_gateway_method_response.acme-api-gw-rs-acme-common-echo-msg-get-200.status_code
+}
+</code></pre>
+<h2 id="the-deployment-and-stage-6">the deployment and stage</h2>
+<p>now we could deploy the API into a stage, so that it could have a url to call from public internet and we could use api key to protect the api as well, like below<br />
+now we could call the API like</p>
+<pre><code>curl --header 'X-API-Key: xxx' -H 'Content-Type: application/json' https://z5kp58ywm9.execute-api.ap-southeast-2.amazonaws.com/dev/acme/common/echo/abc
+</code></pre>
+<pre><code>rest_api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+
+  triggers = {
+    # NOTE: The configuration below will satisfy ordering considerations,
+    #       but not pick up all future REST API changes. More advanced patterns
+    #       are possible, such as using the filesha1() function against the
+    #       Terraform configuration file(s) or removing the .id references to
+    #       calculate a hash against whole resources. Be aware that using whole
+    #       resources will show a difference after the initial implementation.
+    #       It will stabilize to only change when resources change afterwards.
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.acme-api-gw-rs-acme.id,
+      aws_api_gateway_resource.acme-api-gw-rs-acme-common.id,
+      aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo.id,
+      aws_api_gateway_resource.acme-api-gw-rs-acme-common-echo-msg.id,
+      aws_api_gateway_method.acme-api-gw-rs-acme-common-echo-msg-get.id,
+      aws_api_gateway_integration.acme-api-gw-rs-acme-common-echo-msg-get-integration.id,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource &quot;aws_api_gateway_stage&quot; &quot;acme-api-gw-stage&quot; {
+  deployment_id = aws_api_gateway_deployment.acme-api-gw-deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  stage_name    = var.env-name
+}
+
+resource &quot;aws_api_gateway_usage_plan&quot; &quot;acme-api-gw-usage-plan&quot; {
+  name         = &quot;${var.env-name}-acme-${var.region-name}&quot;
+  description  = &quot;acme api usage plan&quot;
+  product_code = &quot;acme&quot;
+
+  api_stages {
+    api_id = aws_api_gateway_rest_api.acme-api-gw-rest.id
+    stage  = aws_api_gateway_stage.acme-api-gw-stage.stage_name
+  }
+
+  quota_settings {
+    limit  = 10000
+    offset = 1
+    period = &quot;WEEK&quot;
+  }
+
+  throttle_settings {
+    burst_limit = 100
+    rate_limit  = 50
+  }
+}
+resource &quot;aws_api_gateway_api_key&quot; &quot;acme-api-gw-default&quot; {
+  name = &quot;${var.env-name}-acme-${var.region-name}&quot;
+}
+
+resource &quot;aws_api_gateway_usage_plan_key&quot; &quot;acme-api-gw-default&quot; {
+  key_id        = aws_api_gateway_api_key.acme-api-gw-default.id
+  key_type      = &quot;API_KEY&quot;
+  usage_plan_id = aws_api_gateway_usage_plan.acme-api-gw-usage-plan.id
+}
+</code></pre>
+<h2 id="the-custom-domain-7">the custom domain</h2>
+<p>sometimes we want to expose the API with our own domain over https, so first we need to request certificate from AWS Certificate Manager</p>
+<pre><code>resource &quot;aws_acm_certificate&quot; &quot;acme-cert&quot; {
+  domain_name               = var.domain
+  validation_method         = &quot;DNS&quot;
+  subject_alternative_names = [&quot;${var.env-name}-acme-gw.${var.region-name}.${var.domain}&quot;]
+
+  tags = var.resource_tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+</code></pre>
+<p>then we could create the custom domain name,</p>
+<ul>
+<li>create the domain name</li>
+<li>register custom domain's DNS in route53 to our own domain, so that we could call the domian name</li>
+<li>connect the custom domain name with a stage we have deployed</li>
+</ul>
+<p>now we could call the api from a custom domain name like below</p>
+<pre><code>curl --header 'X-API-Key: xxx' -H 'Content-Type: application/json' https://acme-api.acme.com/acme/common/echo/abc
+</code></pre>
+<pre><code>resource &quot;aws_api_gateway_domain_name&quot; &quot;acme-api-gw-domain&quot; {
+  domain_name              = &quot;${var.env-name}-acme-document-processors-gw.${var.region-name}.${var.domain}&quot;
+  regional_certificate_arn = aws_acm_certificate.acme-cert.arn
+
+  endpoint_configuration {
+    types = [&quot;REGIONAL&quot;]
+  }
+}
+resource &quot;aws_route53_record&quot; &quot;acme-api-gw-domain&quot; {
+  name    = aws_api_gateway_domain_name.acme-api-gw-domain.domain_name
+  type    = &quot;A&quot;
+  zone_id = var.zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_api_gateway_domain_name.acme-api-gw-domain.regional_domain_name
+    zone_id                = aws_api_gateway_domain_name.acme-api-gw-domain.regional_zone_id
+  }
+}
+resource &quot;aws_api_gateway_base_path_mapping&quot; &quot;acme-api-gw-domain-mapping&quot; {
+  api_id      = aws_api_gateway_rest_api.acme-api-gw-rest.id
+  stage_name  = aws_api_gateway_stage.acme-api-gw-stage.stage_name
+  domain_name = aws_api_gateway_domain_name.acme-api-gw-domain.domain_name
+}
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<div id="disqus_thread" class="max-width-md"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://vipmind-me.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</body>
+</html>
